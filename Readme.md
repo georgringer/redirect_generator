@@ -35,5 +35,3 @@ The following options are available:
 
 * `--status-code`: Define the status code, allowed are *301*,*302*, *303* and *307*.
 * `--dry-run`: If set, the redirect won't be added
-
-./bin/typo3 redirect:add /any-url http://t3-master.vm/examples/extensions/news
