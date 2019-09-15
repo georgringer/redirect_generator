@@ -14,17 +14,20 @@ This extensions creates proper redirects from a given URL.
 
 - A bit slower + higher load
 
-## Usage
+## Installation
 
 **Requirements**
 
 - TYPO3 9 / 10
 - EXT:redirects
 
-### Installation
+**Setup**
+
 Install as any other extension
 
-### Setup
+## Usage
+
+### Add single redirect
 
 Use the following CLI command:
 ```bash
@@ -34,4 +37,17 @@ Use the following CLI command:
 The following options are available:
 
 * `--status-code`: Define the status code, allowed are *301*,*302*, *303* and *307*.
+* `--dry-run`: If set, the redirect won't be added
+
+### Import CSV
+
+Use the following CLI command:
+```bash
+./bin/typo3 redirect:import <path-to-file.csv>
+```
+
+A sample CSV file can be found at `EXT:redirect_generator/Resources/Private/Examples/ImportBasic.csv`
+
+The following options are available:
+
 * `--dry-run`: If set, the redirect won't be added

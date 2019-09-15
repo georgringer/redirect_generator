@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace GeorgRinger\RedirectGenerator\Command;
 
-use GeorgRinger\Gdpr\Domain\Model\Dto\LogFilter;
 use GeorgRinger\RedirectGenerator\Domain\Model\Dto\Configuration;
 use GeorgRinger\RedirectGenerator\Repository\RedirectRepository;
 use GeorgRinger\RedirectGenerator\Service\UrlMatcher;
@@ -19,7 +18,7 @@ class AddRedirectCommand extends Command
 {
 
     /**
-     * Configure the command by defining the name, options and arguments
+     * @inheritDoc
      */
     public function configure()
     {
@@ -30,7 +29,7 @@ class AddRedirectCommand extends Command
                 'dry-run',
                 null,
                 InputOption::VALUE_NONE,
-                'If this option is set, the references will not be removed, but just the output which files would be deleted are shown'
+                'If this option is set, the redirect won\'t be added'
             )
             ->addOption(
                 'status-code',
@@ -43,7 +42,7 @@ class AddRedirectCommand extends Command
     }
 
     /**
-     * Executes the command for showing sys_log entries
+     * Executes the command for adding a redirect
      *
      * @param InputInterface $input
      * @param OutputInterface $output
@@ -72,7 +71,7 @@ class AddRedirectCommand extends Command
                 $io->success('The following redirect would have been added:');
             } else {
                 $redirectRepository = GeneralUtility::makeInstance(RedirectRepository::class);
-                $redirectRepository->addRedirect($source, $result, $configuration);
+                $redirectRepository->addRedirect($source, $result, $configuration, $dryRun);
                 $io->success('Redirect has been added!');
             }
 

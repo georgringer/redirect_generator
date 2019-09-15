@@ -1,0 +1,4 @@
+"source","target","status_code"
+"/fo/bar","http://t3-master.vm/examples/extensions/news","301"
+"/fo/bar2","http://t3-master.vm/examples/extensions/news","307"
+"/fo/bar3","http://t3-master.vm/exakqwkqkwmples/extensions/news"

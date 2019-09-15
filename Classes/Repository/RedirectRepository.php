@@ -44,13 +44,18 @@ class RedirectRepository
      * @param string $url
      * @param UrlResult $urlResult
      * @param Configuration $configuration
+     * @param bool $dryRun
      * @throws \RuntimeException
      */
-    public function addRedirect(string $url, UrlResult $urlResult, Configuration $configuration): void
+    public function addRedirect(string $url, UrlResult $urlResult, Configuration $configuration, bool $dryRun = false): void
     {
         $existingRow = $this->getRedirect($url);
         if (is_array($existingRow)) {
             throw new \RuntimeException(sprintf('Redirect for "%s" exists already with ID %s!', $url, $existingRow['uid']), 1568487151);
+        }
+
+        if ($dryRun) {
+            return;
         }
 
         $urlInfo = GeneralUtility::makeInstance(UrlInfo::class, $url);
