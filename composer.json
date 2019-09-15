@@ -1,0 +1,38 @@
+{
+	"name": "georgringer/redirect-generator",
+	"type": "typo3-cms-extension",
+	"description": "Generate redirect entries from a given set of URLs",
+	"keywords": [
+		"TYPO3",
+		"extension",
+		"redirect"
+	],
+	"homepage": "https://ringer.it",
+	"authors": [
+		{
+			"name": "Georg Ringer",
+			"role": "Developer",
+			"homepage": "https://ringer.it"
+		}
+	],
+	"license": [
+		"GPL-2.0-or-later"
+	],
+	"require": {
+		"typo3/cms-core": "^9.5|| ^10.1",
+		"typo3/cms-redirects": "^9.5|| ^10.1"
+	},
+	"autoload": {
+		"psr-4": {
+			"GeorgRinger\\GoogleSignin\\": "Classes"
+		}
+	},
+	"replace": {
+		"typo3-ter/redirect-generator": "self.version"
+	},
+	"extra": {
+		"typo3/cms": {
+			"extension-key": "redirect_generator"
+		}
+	}
+}
