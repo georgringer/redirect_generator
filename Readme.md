@@ -23,7 +23,10 @@ This extensions creates proper redirects from a given URL.
 
 **Setup**
 
-Install as any other extension
+Install as any other extension:
+
+- *Composer*: `composer require georgringer/redirect-generator`
+
 
 ## Usage
 
