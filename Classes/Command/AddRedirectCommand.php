@@ -75,12 +75,15 @@ class AddRedirectCommand extends Command
                 $io->success('Redirect has been added!');
             }
 
+            $language = $result->getSiteRouteResult()->getLanguage();
             $io->table([], [
+                ['Status Code', $configuration->getTargetStatusCode()],
                 ['Source', $source],
                 ['Target', $target],
                 ['Target Page', $result->getPageArguments()->getPageId()],
-                ['Target Language', $result->getSiteRouteResult()->getLanguage()->getTypo3Language()],
-                ['Status Code', $configuration->getTargetStatusCode()]
+                ['Target Language', sprintf('%s (ID %s)', $language->getTypo3Language(), $language->getLanguageId())],
+                ['Target Link', $result->getLinkString()],
+
             ]);
         } catch (\Exception $e) {
             $io->error(sprintf('Following error occured: %s (%s)', LF . $e->getMessage(), $e->getCode()));

@@ -6,6 +6,7 @@ namespace GeorgRinger\RedirectGenerator\Domain\Model\Dto;
 
 use TYPO3\CMS\Core\Routing\PageArguments;
 use TYPO3\CMS\Core\Routing\SiteRouteResult;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class UrlResult
 {
@@ -45,7 +46,17 @@ class UrlResult
 
     public function getLinkString(): string
     {
-        return sprintf('t3://page?uid=%s', $this->pageArguments->getPageId());
+        $parameters = [
+            'id' => $this->pageArguments->getPageId()
+        ];
+
+        // language
+        if ($this->siteRouteResult->getLanguage() && $this->siteRouteResult->getLanguage()->getLanguageId() > 0) {
+            $parameters['L'] = $this->siteRouteResult->getLanguage()->getLanguageId();
+        }
+
+        $parameters = GeneralUtility::implodeArrayForUrl('', $parameters);
+        return sprintf('t3://page?%s', trim($parameters, '&'));
     }
 
 
