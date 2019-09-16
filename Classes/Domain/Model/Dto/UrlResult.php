@@ -47,7 +47,7 @@ class UrlResult
     public function getLinkString(): string
     {
         $parameters = [
-            'id' => $this->pageArguments->getPageId()
+            'uid' => $this->pageArguments->getPageId()
         ];
 
         // language
