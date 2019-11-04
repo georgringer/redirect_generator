@@ -28,7 +28,7 @@ class RedirectRepository
                     $queryBuilder->expr()->eq('source_host', $queryBuilder->createNamedParameter('*', \PDO::PARAM_STR)),
                     $queryBuilder->expr()->eq('source_host', $queryBuilder->createNamedParameter($urlInfo->getHost(), \PDO::PARAM_STR))
                 ),
-                $queryBuilder->expr()->eq('source_path', $queryBuilder->createNamedParameter($urlInfo->getPath(), \PDO::PARAM_STR)),
+                $queryBuilder->expr()->eq('source_path', $queryBuilder->createNamedParameter($urlInfo->getPath(), \PDO::PARAM_STR))
             )
             ->execute()
             ->fetch();
