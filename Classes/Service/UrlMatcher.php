@@ -21,6 +21,7 @@ class UrlMatcher
      */
     public function getUrlData(string $url): UrlResult
     {
+        $url = trim($url);
         $request = new ServerRequest($url, 'GET');
 
         $siteMatcher = GeneralUtility::makeInstance(SiteMatcher::class);
