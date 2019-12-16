@@ -6,6 +6,7 @@ namespace GeorgRinger\RedirectGenerator\Repository;
 use GeorgRinger\RedirectGenerator\Domain\Model\Dto\Configuration;
 use GeorgRinger\RedirectGenerator\Domain\Model\Dto\UrlInfo;
 use GeorgRinger\RedirectGenerator\Domain\Model\Dto\UrlResult;
+use GeorgRinger\RedirectGenerator\Exception\DuplicateException;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -42,16 +43,16 @@ class RedirectRepository
 
     /**
      * @param string $url
-     * @param UrlResult $urlResult
+     * @param string $target
      * @param Configuration $configuration
      * @param bool $dryRun
-     * @throws \RuntimeException
+     * @throws DuplicateException
      */
-    public function addRedirect(string $url, UrlResult $urlResult, Configuration $configuration, bool $dryRun = false): void
+    public function addRedirect(string $url, string $target, Configuration $configuration, bool $dryRun = false): void
     {
         $existingRow = $this->getRedirect($url);
         if (is_array($existingRow)) {
-            throw new \RuntimeException(sprintf('Redirect for "%s" exists already with ID %s!', $url, $existingRow['uid']), 1568487151);
+            throw new DuplicateException(sprintf('Redirect for "%s" exists already with ID %s!', $url, $existingRow['uid']), 1568487151);
         }
 
         if ($dryRun) {
@@ -73,7 +74,7 @@ class RedirectRepository
             'respect_query_parameters' => $configuration->getRespectQueryParmeters() ? 1 : 0,
             'source_host' => $urlInfo->getHost() ?: '*',
             'source_path' => $urlInfo->getPath(),
-            'target' => $urlResult->getLinkString()
+            'target' => $target
         ];
         $connection->insert('sys_redirect', $data);
     }

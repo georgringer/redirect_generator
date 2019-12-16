@@ -71,7 +71,7 @@ class AddRedirectCommand extends Command
                 $io->success('The following redirect would have been added:');
             } else {
                 $redirectRepository = GeneralUtility::makeInstance(RedirectRepository::class);
-                $redirectRepository->addRedirect($source, $result, $configuration, $dryRun);
+                $redirectRepository->addRedirect($source, $result->getLinkString(), $configuration, $dryRun);
                 $io->success('Redirect has been added!');
             }
 

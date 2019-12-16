@@ -1,18 +1,10 @@
 # TYPO3 Extension `redirect_generator`
 
-This extensions creates proper redirects from a given URL. 
+This extensions creates proper redirect entries from a CSV file. 
+
+Each target entry will be matched by the routing configuration. If the target is `http://demo.vm/company/contact`, the redirect will be created to the related page id! 
 
 ![Add Redirect](Resources/Public/Screenshots/redirect-add.png)
-
-**Advantages over `.htaccess` entries**
-
-- If the target URL changes (e.g. because page slug changes), the redirect will still work
-- Redirects are managable via UI for site administrators
-- No deployment needed
-
-**Disadvantages**
-
-- A bit slower + higher load
 
 ## Installation
 
@@ -54,3 +46,4 @@ A sample CSV file can be found at `EXT:redirect_generator/Resources/Private/Exam
 The following options are available:
 
 * `--dry-run`: If set, the redirect won't be added
+* `--external-domains`: Provide a comma separated list of domains which are external

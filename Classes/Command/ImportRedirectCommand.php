@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace GeorgRinger\RedirectGenerator\Command;
 
 use GeorgRinger\RedirectGenerator\Domain\Model\Dto\Configuration;
+use GeorgRinger\RedirectGenerator\Exception\DuplicateException;
 use GeorgRinger\RedirectGenerator\Repository\RedirectRepository;
 use GeorgRinger\RedirectGenerator\Service\CsvReader;
 use GeorgRinger\RedirectGenerator\Service\UrlMatcher;
@@ -25,6 +26,9 @@ class ImportRedirectCommand extends Command
     /** @var UrlMatcher */
     protected $urlMatcher;
 
+    /** @var array */
+    protected $externalDomains = [];
+
     public function __construct(string $name = null)
     {
         $this->redirectRepository = GeneralUtility::makeInstance(RedirectRepository::class);
@@ -45,6 +49,11 @@ class ImportRedirectCommand extends Command
                 null,
                 InputOption::VALUE_NONE,
                 'If this option is set, the redirects won\'t be added but just the result shown'
+            )->addOption(
+                'external-domains',
+                null,
+                InputOption::VALUE_OPTIONAL,
+                'List of target domains which are treated as external'
             )
             ->setHelp('Import a CSV file as redirects');
     }
@@ -61,8 +70,10 @@ class ImportRedirectCommand extends Command
         $io->title($this->getDescription());
 
         $filePath = $input->getArgument('file');
-        $dryRun = $input->hasOption('dry-run') && $input->getOption('dry-run') != false ? true : false;
-
+        $dryRun = ($input->hasOption('dry-run') && $input->getOption('dry-run') != false);
+        if ($input->hasOption('external-domains')) {
+            $this->setExternalDomains($input->getOption('external-domains'));
+        }
         if ($dryRun) {
             $io->warning('Dry run enabled!');
         }
@@ -95,6 +106,12 @@ class ImportRedirectCommand extends Command
                 }
                 $io->error('The following errors happened: ' . LF . implode(LF . LF, $errorMessages));
             }
+            if ($response['skipped'] > 0) {
+                $io->note(sprintf('%s redirects skipped because source is same as target', $response['skipped']));
+            }
+            if ($response['duplicates'] > 0) {
+                $io->note(sprintf('%s redirects skipped because of duplicates', $response['duplicates']));
+            }
         } catch (\UnexpectedValueException $exception) {
             $io->error($exception->getMessage());
         }
@@ -104,24 +121,57 @@ class ImportRedirectCommand extends Command
     {
         $response = [
             'ok' => 0,
+            'skipped' => 0,
+            'duplicates' => 0,
             'error' => []
         ];
         foreach ($items as $position => $item) {
             try {
                 $this->validateCsvHeaders($item, $position);
+                if ($this->targetEqualsSource($item['target'], $item['source'])) {
+                    $response['skipped']++;
+                    continue;
+                }
+                if ($item['target'] === 'x') {
+                    continue;
+                }
+
                 $configuration = $this->getConfigurationFromItem($item);
-
-                $result = $this->urlMatcher->getUrlData($item['target']);
-
-                $this->redirectRepository->addRedirect($item['source'], $result, $configuration, $dryRun);
+                if ($this->isExternalDomain($item['target'])) {
+                    $targetUrl = $item['target'];
+                } else {
+                    $result = $this->urlMatcher->getUrlData($item['target']);
+                    $targetUrl = $result->getLinkString();
+                }
+                $this->redirectRepository->addRedirect($item['source'], $targetUrl, $configuration, $dryRun);
 
                 $response['ok']++;
+            } catch (DuplicateException $e) {
+                $response['duplicates']++;
             } catch (\Exception $e) {
-                $response['error'][$e->getCode()][] = $e->getMessage();
+                $response['error'][$e->getCode()][$e->getMessage()] = $e->getMessage();
             }
         }
 
         return $response;
+    }
+
+    protected function targetEqualsSource(string $target, string $source): bool
+    {
+        return rtrim($target, '/') === rtrim($source, '/');
+    }
+
+    protected function isExternalDomain(string $target): bool
+    {
+        if (empty($this->externalDomains)) {
+            return false;
+        }
+        foreach ($this->externalDomains as $externalDomain) {
+            if (strpos($target, $externalDomain) === 0) {
+                return true;
+            }
+        }
+        return false;
     }
 
     protected function getConfigurationFromItem(array $item)
@@ -133,7 +183,6 @@ class ImportRedirectCommand extends Command
 
         return $configuration;
     }
-
 
     /**
      * @param string $filePath
@@ -164,5 +213,14 @@ class ImportRedirectCommand extends Command
         }
 
         return true;
+    }
+
+    protected function setExternalDomains(string $domains)
+    {
+        $list = GeneralUtility::trimExplode(',', $domains, true);
+        foreach ($list as $item) {
+            $this->externalDomains[] = 'http://' . $item;
+            $this->externalDomains[] = 'https://' . $item;
+        }
     }
 }
