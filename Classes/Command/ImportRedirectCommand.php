@@ -72,7 +72,7 @@ class ImportRedirectCommand extends Command
         $filePath = $input->getArgument('file');
         $dryRun = ($input->hasOption('dry-run') && $input->getOption('dry-run') != false);
         if ($input->hasOption('external-domains')) {
-            $this->setExternalDomains($input->getOption('external-domains'));
+            $this->setExternalDomains((string)$input->getOption('external-domains'));
         }
         if ($dryRun) {
             $io->warning('Dry run enabled!');
@@ -158,6 +158,9 @@ class ImportRedirectCommand extends Command
 
     protected function targetEqualsSource(string $target, string $source): bool
     {
+        $search = ['http://', 'https://'];
+        $target = str_replace($search, '', $target);
+        $source = str_replace($search, '', $source);
         return rtrim($target, '/') === rtrim($source, '/');
     }
 

@@ -29,7 +29,7 @@ class RedirectRepository
                     $queryBuilder->expr()->eq('source_host', $queryBuilder->createNamedParameter('*', \PDO::PARAM_STR)),
                     $queryBuilder->expr()->eq('source_host', $queryBuilder->createNamedParameter($urlInfo->getHost(), \PDO::PARAM_STR))
                 ),
-                $queryBuilder->expr()->eq('source_path', $queryBuilder->createNamedParameter($urlInfo->getPath(), \PDO::PARAM_STR))
+                $queryBuilder->expr()->eq('source_path', $queryBuilder->createNamedParameter($urlInfo->getPathWithQuery(), \PDO::PARAM_STR))
             )
             ->execute()
             ->fetch();
@@ -73,7 +73,7 @@ class RedirectRepository
             'disable_hitcount' => $configuration->getDisableHitCount() ? 1 : 0,
             'respect_query_parameters' => $configuration->getRespectQueryParmeters() ? 1 : 0,
             'source_host' => $urlInfo->getHost() ?: '*',
-            'source_path' => $urlInfo->getPath(),
+            'source_path' => $urlInfo->getPathWithQuery(),
             'target' => $target
         ];
         $connection->insert('sys_redirect', $data);

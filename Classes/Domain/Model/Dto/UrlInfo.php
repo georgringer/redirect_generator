@@ -19,6 +19,9 @@ class UrlInfo
     /** @var string */
     protected $path = '';
 
+    /** @var string */
+    protected $query = '';
+
 
     public function __construct(string $url)
     {
@@ -27,6 +30,7 @@ class UrlInfo
         $this->scheme = $split['scheme'] ?? '';
         $this->host = $split['host'] ?? '';
         $this->path = $split['path'] ?? '';
+        $this->query = $split['query'] ?? '';
     }
 
     /**
@@ -51,6 +55,19 @@ class UrlInfo
     public function getPath(): string
     {
         return $this->path;
+    }
+
+    /**
+     * @return string
+     */
+    public function getQuery(): string
+    {
+        return $this->query;
+    }
+
+    public function getPathWithQuery(): string
+    {
+        return $this->path . $this->query;
     }
 
 }
