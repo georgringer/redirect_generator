@@ -137,7 +137,7 @@ class ImportRedirectCommand extends Command
                 }
 
                 $configuration = $this->getConfigurationFromItem($item);
-                if ($this->isExternalDomain($item['target'])) {
+                if ($item['external'] === '1' || $this->isExternalDomain($item['target'])) {
                     $targetUrl = $item['target'];
                 } else {
                     $result = $this->urlMatcher->getUrlData($item['target']);
