@@ -67,7 +67,11 @@ class UrlInfo
 
     public function getPathWithQuery(): string
     {
-        return $this->path . $this->query;
+        $path = $this->path;
+        if (!empty($this->query)) {
+            $path .= '?' . $this->query;
+        }
+        return $path;
     }
 
 }
