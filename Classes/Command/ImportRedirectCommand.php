@@ -115,6 +115,8 @@ class ImportRedirectCommand extends Command
         } catch (\UnexpectedValueException $exception) {
             $io->error($exception->getMessage());
         }
+
+        return 0;
     }
 
     protected function importItems(array $items, bool $dryRun): array
