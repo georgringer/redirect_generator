@@ -71,7 +71,7 @@ class RedirectRepository
             'force_https' => $configuration->getForceHttps() ? 1 : 0,
             'target_statuscode' => $configuration->getTargetStatusCode(),
             'disable_hitcount' => $configuration->getDisableHitCount() ? 1 : 0,
-            'respect_query_parameters' => $configuration->getRespectQueryParmeters() ? 1 : 0,
+            'respect_query_parameters' => $configuration->getRespectQueryParameters() ? 1 : 0,
             'source_host' => $urlInfo->getHost() ?: '*',
             'source_path' => $urlInfo->getPathWithQuery(),
             'target' => $target

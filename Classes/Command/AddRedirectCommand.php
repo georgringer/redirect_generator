@@ -88,6 +88,8 @@ class AddRedirectCommand extends Command
         } catch (\Exception $e) {
             $io->error(sprintf('Following error occured: %s (%s)', LF . $e->getMessage(), $e->getCode()));
         }
+
+        return 0;
     }
 
     protected function getConfigurationFromInput(InputInterface $input): Configuration

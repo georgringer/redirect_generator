@@ -9,7 +9,7 @@ class Configuration
 {
 
     /** @var bool */
-    protected $respectQueryParmeters = false;
+    protected $respectQueryParameters = false;
 
     /** @var bool */
     protected $keepQueryParameters = false;
@@ -30,18 +30,18 @@ class Configuration
     /**
      * @return bool
      */
-    public function getRespectQueryParmeters(): bool
+    public function getRespectQueryParameters(): bool
     {
-        return $this->respectQueryParmeters;
+        return $this->respectQueryParameters;
     }
 
     /**
-     * @param bool $respectQueryParmeters
+     * @param bool $respectQueryParameters
      * @return Configuration
      */
-    public function setRespectQueryParmeters(bool $respectQueryParmeters): Configuration
+    public function setRespectQueryParameters(bool $respectQueryParameters): Configuration
     {
-        $this->respectQueryParmeters = $respectQueryParmeters;
+        $this->respectQueryParameters = $respectQueryParameters;
         return $this;
     }
 
