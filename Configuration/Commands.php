@@ -11,5 +11,8 @@ return [
     ],
     'redirect:import' => [
         'class' => \GeorgRinger\RedirectGenerator\Command\ImportRedirectCommand::class
+    ],
+    'redirect:export' => [
+        'class' => \GeorgRinger\RedirectGenerator\Command\ExportRedirectCommand::class
     ]
 ];

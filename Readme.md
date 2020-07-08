@@ -1,8 +1,8 @@
 # TYPO3 Extension `redirect_generator`
 
-This extensions creates proper redirect entries from a CSV file. 
+This extensions creates proper redirect entries from a CSV file.
 
-Each target entry will be matched by the routing configuration. If the target is `http://demo.vm/company/contact`, the redirect will be created to the related page id! 
+Each target entry will be matched by the routing configuration. If the target is `http://demo.vm/company/contact`, the redirect will be created to the related page id!
 
 ![Add Redirect](Resources/Public/Screenshots/redirect-add.png)
 
@@ -47,3 +47,14 @@ The following options are available:
 
 * `--dry-run`: If set, the redirect won't be added
 * `--external-domains`: Provide a comma separated list of domains which are external
+
+### Export Redirects
+
+Export all redirects as CSV.
+The optional option `--transform-target-url` transform the target url like `t3://page?uid=1106` into the final URL.
+
+Use the following CLI command:
+
+```bash
+./bin/typo3 redirect:export export.csv --transform-target-url
+```

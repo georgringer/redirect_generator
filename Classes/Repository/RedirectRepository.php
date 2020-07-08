@@ -15,6 +15,8 @@ class RedirectRepository
 {
     private const CUSTOM_USER_ID = 19191918;
 
+    private const TABLE = 'sys_redirect';
+
     public function getRedirect(string $url): ?array
     {
         $urlInfo = GeneralUtility::makeInstance(UrlInfo::class, $url);
@@ -22,7 +24,7 @@ class RedirectRepository
         $queryBuilder = $this->getConnection()->createQueryBuilder();
 
         $row = $queryBuilder->select('*')
-            ->from('sys_redirect')
+            ->from(self::TABLE)
             ->where(
                 $queryBuilder->expr()->eq('createdby', $queryBuilder->createNamedParameter(self::CUSTOM_USER_ID, \PDO::PARAM_INT)),
                 $queryBuilder->expr()->orX(
@@ -76,12 +78,23 @@ class RedirectRepository
             'source_path' => $urlInfo->getPathWithQuery(),
             'target' => $target
         ];
-        $connection->insert('sys_redirect', $data);
+        $connection->insert(self::TABLE, $data);
+    }
+
+    public function getAllRedirects(): array
+    {
+        $queryBuilder = $this->getConnection()->createQueryBuilder();
+
+        return $queryBuilder
+            ->select('*')
+            ->from(self::TABLE)
+            ->execute()
+            ->fetchAll();
     }
 
     private function getConnection(): Connection
     {
         return GeneralUtility::makeInstance(ConnectionPool::class)
-            ->getConnectionForTable('sys_redirect');
+            ->getConnectionForTable(self::TABLE);
     }
 }

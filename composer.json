@@ -1,11 +1,14 @@
 {
 	"name": "georgringer/redirect-generator",
 	"type": "typo3-cms-extension",
-	"description": "Generate redirect entries from a given set of URLs",
+	"description": "Generate redirect entries from a given set of URLs and export all to CSV",
 	"keywords": [
 		"TYPO3",
 		"extension",
-		"redirect"
+		"redirect",
+		"import",
+		"export",
+		"csv"
 	],
 	"homepage": "https://ringer.it",
 	"authors": [

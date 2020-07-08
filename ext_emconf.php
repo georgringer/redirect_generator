@@ -2,13 +2,13 @@
 
 $EM_CONF[$_EXTKEY] = [
     'title' => 'Redirect generator',
-    'description' => '',
+    'description' => 'Import + Export redirects',
     'category' => 'frontend',
     'author' => 'Georg Ringer',
     'author_email' => 'mail@ringer.it',
     'state' => 'beta',
     'clearCacheOnLoad' => true,
-    'version' => '0.1.0',
+    'version' => '0.2.0',
     'constraints' =>
         [
             'depends' => [
