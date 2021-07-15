@@ -15,6 +15,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Utility\HttpUtility;
 use TYPO3\CMS\Core\Utility\StringUtility;
 
 class ImportRedirectCommand extends Command
@@ -144,6 +145,11 @@ class ImportRedirectCommand extends Command
                 } else {
                     $result = $this->urlMatcher->getUrlData($item['target']);
                     $targetUrl = $result->getLinkString();
+
+                    $routeArguments = $result->getPageArguments()->getRouteArguments();
+                    if (!empty($routeArguments)) {
+                        $targetUrl .= HttpUtility::buildQueryString($routeArguments, '&');
+                    }
                 }
                 $this->redirectRepository->addRedirect($item['source'], $targetUrl, $configuration, $dryRun);
 
