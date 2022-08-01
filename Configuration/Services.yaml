@@ -1,0 +1,26 @@
+services:
+  _defaults:
+    autowire: true
+    autoconfigure: true
+    public: false
+
+  GeorgRinger\RedirectGenerator\Command\AddRedirectCommand:
+    tags:
+      - name: 'console.command'
+        command: 'redirect:add'
+        description: 'Add redirect to the redirects table'
+        schedulable: false
+
+  GeorgRinger\RedirectGenerator\Command\ImportRedirectCommand:
+      tags:
+          - name: 'console.command'
+            command: 'redirect:import'
+            description: 'Import redirect'
+            schedulable: false
+
+  GeorgRinger\RedirectGenerator\Command\ExportRedirectCommand:
+      tags:
+          - name: 'console.command'
+            command: 'redirect:export'
+            description: 'Export redirects as csv'
+            schedulable: false

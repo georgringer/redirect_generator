@@ -41,6 +41,14 @@ Use the following CLI command:
 ./bin/typo3 redirect:import <path-to-file.csv>
 ```
 
+````csv
+"source","target","status_code"
+"/fo/bar","https://demo.ddev.site/examples/extensions/news","301"
+"/fo/bar2","https://demo.ddev.site/examples/extensions/news","307"
+"/fo/bar3","https://v/exakqwkqkwmples/extensions/news"
+
+````
+
 A sample CSV file can be found at `EXT:redirect_generator/Resources/Private/Examples/ImportBasic.csv`
 
 The following options are available:

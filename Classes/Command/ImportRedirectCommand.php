@@ -43,7 +43,7 @@ class ImportRedirectCommand extends Command
      */
     public function configure()
     {
-        $this->setDescription('Redirect command')
+        $this->setDescription('Import redirect')
             ->addArgument('file', InputArgument::REQUIRED, 'File to be imported')
             ->addOption(
                 'dry-run',
@@ -81,8 +81,8 @@ class ImportRedirectCommand extends Command
 
         $csvReader = GeneralUtility::makeInstance(CsvReader::class);
         $csvReader->heading = true;
-        $csvReader->delimiter = ',';
-        $csvReader->enclosure = '"';
+        $csvReader->delimiter = ';';
+        $csvReader->enclosure = '';
         $csvReader->parse($filePath);
 
         try {
@@ -140,7 +140,7 @@ class ImportRedirectCommand extends Command
                 }
 
                 $configuration = $this->getConfigurationFromItem($item);
-                if ($item['external'] === '1' || $this->isExternalDomain($item['target'])) {
+                if ($item['external'] ?? '' === '1' || $this->isExternalDomain($item['target'] ?? '')) {
                     $targetUrl = $item['target'];
                 } else {
                     $result = $this->urlMatcher->getUrlData($item['target']);
