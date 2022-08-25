@@ -42,11 +42,10 @@ Use the following CLI command:
 ```
 
 ````csv
-"source","target","status_code"
-"/fo/bar","https://demo.ddev.site/examples/extensions/news","301"
-"/fo/bar2","https://demo.ddev.site/examples/extensions/news","307"
-"/fo/bar3","https://v/exakqwkqkwmples/extensions/news"
-
+source;target;status_code
+/fo/bar;http://t3-master.vm/examples/extensions/news;301
+/fo/bar2;http://t3-master.vm/examples/extensions/news;307
+/fo/bar3;http://t3-master.vm/exakqwkqkwmples/extensions/news;301
 ````
 
 A sample CSV file can be found at `EXT:redirect_generator/Resources/Private/Examples/ImportBasic.csv`
