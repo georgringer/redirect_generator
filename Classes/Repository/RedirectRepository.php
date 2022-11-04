@@ -26,7 +26,6 @@ class RedirectRepository
         $row = $queryBuilder->select('*')
             ->from(self::TABLE)
             ->where(
-                $queryBuilder->expr()->eq('createdby', $queryBuilder->createNamedParameter(self::CUSTOM_USER_ID, \PDO::PARAM_INT)),
                 $queryBuilder->expr()->orX(
                     $queryBuilder->expr()->eq('source_host', $queryBuilder->createNamedParameter('*', \PDO::PARAM_STR)),
                     $queryBuilder->expr()->eq('source_host', $queryBuilder->createNamedParameter($urlInfo->getHost(), \PDO::PARAM_STR))
