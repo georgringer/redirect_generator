@@ -28,7 +28,33 @@ class NotificationHandler
     public function sendThrowableAsEmail(Throwable $error): void
     {
         $lines = $this->throwableToArray($error);
-        $this->sendNotificationEmail($lines);
+        $this->sendNotificationEmail('Unexpected error in redirect generator', $lines);
+    }
+
+    /**
+     * Sends the result of the export command as email.
+     * The email content is based on the notification_level setting:
+     * - Errors are always added
+     * - Ok messagea are added if level is info
+     *
+     * @param array $data the result data of the export
+     */
+    public function sendExportResultAsEmail(array $data): void
+    {
+        $level = (int)$this->extensionConfiguration->get('redirect_generator', 'notification_level');
+        $lines = [];
+
+        if (!empty($data['ok']) && $level >= 2) {
+            $lines[] = $data['ok'];
+        }
+        if (!empty($data['error'])) {
+            $lines[] = 'The following errors happened: ';
+            $lines[] = $data['error'];
+        }
+
+        if(!empty($lines)) {
+            $this->sendNotificationEmail('Redirect generator export notification', $lines);
+        }
     }
 
     /**
@@ -63,7 +89,7 @@ class NotificationHandler
         }
 
         if(!empty($lines)) {
-            $this->sendNotificationEmail($lines);
+            $this->sendNotificationEmail('Redirect Generator import notification', $lines);
         }
     }
 
@@ -74,9 +100,10 @@ class NotificationHandler
      * Recipients are configured in the notification_email setting.
      * No E-Mail is sent if notification_email is not set or the lines array is empty.
      *
+     * @param string $subject The subject of the e-mail
      * @param array $lines the text to set in the body of the email
      */
-    protected function sendNotificationEmail(array $lines): void
+    protected function sendNotificationEmail(string $subject, array $lines): void
     {
         $recipients = \explode(',', $this->extensionConfiguration->get('redirect_generator', 'notification_email') ?? '');
 
@@ -93,7 +120,7 @@ class NotificationHandler
             $mail->addTo(new Address(\trim($recipient)));
         }
 
-        $mail->subject('Redirect Generator Import Notification');
+        $mail->subject($subject);
         $mail->text(\implode('\r\n', $lines));
         $mail->html('<pre>' . \implode('<br/>', $lines) . '</pre>');
         $mail->send();
