@@ -8,6 +8,7 @@ use GeorgRinger\RedirectGenerator\Exception\DuplicateException;
 use GeorgRinger\RedirectGenerator\Repository\RedirectRepository;
 use GeorgRinger\RedirectGenerator\Service\CsvReader;
 use GeorgRinger\RedirectGenerator\Service\UrlMatcher;
+use GeorgRinger\RedirectGenerator\Utility\NotificationHandler;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -27,13 +28,19 @@ class ImportRedirectCommand extends Command
     /** @var UrlMatcher */
     protected $urlMatcher;
 
+    /** @var NotificationHandler */
+    protected $notificationHandler;
+
     /** @var array */
     protected $externalDomains = [];
 
-    public function __construct(string $name = null)
-    {
+    public function __construct(
+        string $name = null,
+        NotificationHandler $notificationHandler
+    ) {
         $this->redirectRepository = GeneralUtility::makeInstance(RedirectRepository::class);
         $this->urlMatcher = GeneralUtility::makeInstance(UrlMatcher::class);
+        $this->notificationHandler = $notificationHandler;
 
         parent::__construct($name);
     }
@@ -113,7 +120,10 @@ class ImportRedirectCommand extends Command
             if ($response['duplicates'] > 0) {
                 $io->note(sprintf('%s redirects skipped because of duplicates', $response['duplicates']));
             }
+
+            $this->notificationHandler->sendImportResultAsEmail($response);
         } catch (\UnexpectedValueException $exception) {
+            $this->notificationHandler->sendThrowableAsEmail($exception);
             $io->error($exception->getMessage());
         }
 
