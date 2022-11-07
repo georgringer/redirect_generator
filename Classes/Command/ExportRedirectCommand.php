@@ -3,11 +3,9 @@ declare(strict_types=1);
 
 namespace GeorgRinger\RedirectGenerator\Command;
 
-use GeorgRinger\RedirectGenerator\Domain\Model\Dto\Configuration;
-use GeorgRinger\RedirectGenerator\Repository\RedirectRepository;
 use GeorgRinger\RedirectGenerator\Service\CsvReader;
 use GeorgRinger\RedirectGenerator\Service\ExportService;
-use GeorgRinger\RedirectGenerator\Service\UrlMatcher;
+use GeorgRinger\RedirectGenerator\Utility\NotificationHandler;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -15,10 +13,21 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Core\Utility\StringUtility;
 
 class ExportRedirectCommand extends Command
 {
+
+    /** @var NotificationHandler */
+    protected $notificationHandler;
+
+    public function __construct(
+        string $name = null,
+        NotificationHandler $notificationHandler
+    ) {
+        $this->notificationHandler = $notificationHandler;
+
+        parent::__construct($name);
+    }
 
     /**
      * @inheritDoc
@@ -48,8 +57,10 @@ class ExportRedirectCommand extends Command
         $io->title($this->getDescription());
 
         $file = (string)$input->getArgument('target');
-        if (!StringUtility::endsWith($file, '.csv')) {
-            $io->error(sprintf('Target must end with .csv, given "%s"', $file));
+        if (!\str_ends_with($file, '.csv')) {
+            $data['error'] = sprintf('Target must end with .csv, given "%s"', $file);
+            $this->notificationHandler->sendExportResultAsEmail($data);
+            $io->error($data['error']);
             return 0;
         }
 
@@ -57,7 +68,9 @@ class ExportRedirectCommand extends Command
         $exportService = GeneralUtility::makeInstance(ExportService::class);
         $data = $exportService->run($transformTargetUrl);
         if (empty($data)) {
-            $io->success('No redirects found!');
+            $data['ok'] = 'No redirects found!';
+            $this->notificationHandler->sendExportResultAsEmail($data);
+            $io->success($data['ok']);
             return 0;
         }
 
@@ -66,7 +79,9 @@ class ExportRedirectCommand extends Command
         $csv->titles = array_keys($data[0]);
         $csv->save($file, $data);
 
-        $io->success(sprintf('CSV generated, handled %s redirects!', count($data)));
+        $data['ok'] = \sprintf('CSV generated, handled %s redirects!', count($data));
+        $this->notificationHandler->sendExportResultAsEmail($data);
+        $io->success($data['ok']);
 
         return 0;
     }
