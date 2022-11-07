@@ -48,9 +48,9 @@ class NotificationHandler
         if ($data['ok'] > 0 && $level >= 2) {
             $lines[] = \sprintf('%s redirects have been added!', $data['ok']);
         }
-        if (!empty($response['error'])) {
+        if (!empty($data['error'])) {
             $lines[] = 'The following errors happened: ';
-            foreach ($response['error'] as $errorCode => $messages) {
+            foreach ($data['error'] as $errorCode => $messages) {
                 $lines[] = 'Error code ' . $errorCode . ':';
                 $lines[] = \array_merge($lines, $messages);
             }
