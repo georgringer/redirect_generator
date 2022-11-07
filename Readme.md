@@ -8,23 +8,33 @@ Each target entry will be matched by the routing configuration. If the target is
 
 ## Installation
 
-**Requirements**
+### Requirements
 
-- TYPO3 9 / 10
-- EXT:redirects
+* TYPO3 10 / 11
+* EXT:redirects
 
-**Setup**
+### Setup
 
 Install as any other extension:
 
-- *Composer*: `composer require georgringer/redirect-generator`
+* *Composer*: `composer require georgringer/redirect-generator`
 
+## Configuration
+
+Set the following extension configuration options to enable email notifications:
+
+* *notification_email*: A comma separated list of e-mail addresses to send notification emails of the export and import commands
+* *notification_level*: Set the level of notification messages you want to receive:
+  * 0 (error): Only receive error messages
+  * 1 (warning): Receive error and warning messages
+  * 2 (info): Receive all messages
 
 ## Usage
 
 ### Add single redirect
 
 Use the following CLI command:
+
 ```bash
 ./bin/typo3 redirect:add /any-url https://domain.tld/your-final-url
 ```
@@ -37,6 +47,7 @@ The following options are available:
 ### Import CSV
 
 Use the following CLI command:
+
 ```bash
 ./bin/typo3 redirect:import <path-to-file.csv>
 ```
