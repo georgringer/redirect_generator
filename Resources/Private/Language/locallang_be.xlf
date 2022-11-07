@@ -7,7 +7,7 @@
                 <source>E-Mails for notifications: A comma separated list of e-mail addresses to send notification e-mails, keep empty to disable the feature.</source>
             </trans-unit>
             <trans-unit id="config.notificationLevel" resname="config.notificationLevel">
-                <source>Level of notifications to send: Send notification of this level or above, can be one of: error, warning, info.</source>
+                <source>Level of notifications to send: Send notification of this level or below, can be one of: 0 (error), 1 (warning), 2 (info).</source>
             </trans-unit>
         </body>
     </file>
