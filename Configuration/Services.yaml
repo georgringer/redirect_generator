@@ -4,6 +4,9 @@ services:
     autoconfigure: true
     public: false
 
+  GeorgRinger\RedirectGenerator\:
+    resource: '../Classes/*'
+
   GeorgRinger\RedirectGenerator\Command\AddRedirectCommand:
     tags:
       - name: 'console.command'

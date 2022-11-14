@@ -1,0 +1,4 @@
+# cat=basic/enable/a; type=string; label=LLL:EXT:redirect_generator/Resources/Private/Language/locallang_be.xlf:config.contificationEmail
+notification_email =
+# cat=basic/enable/b; type=options[error=0,warning=1,info=2]; label=LLL:EXT:redirect_generator/Resources/Private/Language/locallang_be.xlf:config.notificationLevel
+notification_level = 0

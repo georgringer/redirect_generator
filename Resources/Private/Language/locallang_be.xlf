@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="en" datatype="plaintext" original="EXT:redirect_generator/Resources/Private/Language/locallang_be.xlf" date="2020-10-18T18:20:51Z" product-name="redirect_generator">
+        <header/>
+        <body>
+            <trans-unit id="config.contificationEmail" resname="config.contificationEmail">
+                <source>E-Mails for notifications: A comma separated list of e-mail addresses to send notification e-mails, keep empty to disable the feature.</source>
+            </trans-unit>
+            <trans-unit id="config.notificationLevel" resname="config.notificationLevel">
+                <source>Level of notifications to send: Send notification of this level or below, can be one of: 0 (error), 1 (warning), 2 (info).</source>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>
