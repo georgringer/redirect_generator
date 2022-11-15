@@ -195,8 +195,9 @@ class ImportRedirectCommand extends Command
         return false;
     }
 
-    protected function getConfigurationFromItem(array $item)
+    protected function getConfigurationFromItem(array $item): Configuration
     {
+        /** @var Configuration */
         $configuration = GeneralUtility::makeInstance(Configuration::class);
         if (isset($item['status_code'])) {
             $configuration->setTargetStatusCode((int)$item['status_code']);
@@ -214,7 +215,7 @@ class ImportRedirectCommand extends Command
         if (!is_file($filePath)) {
             throw new \UnexpectedValueException(sprintf('File "%s" does not exist', $filePath), 1568544111);
         }
-        if (!StringUtility::endsWith(strtolower($filePath), '.csv')) {
+        if (!\str_ends_with(strtolower($filePath), '.csv')) {
             throw new \UnexpectedValueException(sprintf('File "%s" is no CSV file', $filePath), 1568544112);
         }
 
