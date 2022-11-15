@@ -9,6 +9,8 @@ use GeorgRinger\RedirectGenerator\Repository\RedirectRepository;
 use GeorgRinger\RedirectGenerator\Service\CsvReader;
 use GeorgRinger\RedirectGenerator\Service\UrlMatcher;
 use GeorgRinger\RedirectGenerator\Utility\NotificationHandler;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -19,8 +21,9 @@ use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\HttpUtility;
 
-class ImportRedirectCommand extends Command
+class ImportRedirectCommand extends Command implements LoggerAwareInterface
 {
+    use LoggerAwareTrait;
 
     /** @var RedirectRepository */
     protected $redirectRepository;
@@ -105,6 +108,7 @@ class ImportRedirectCommand extends Command
             if (empty($data)) {
                 $allowEmptyFile = $this->extensionConfiguration->get('redirect_generator', 'allow_empty_import_file');
                 if ($allowEmptyFile) {
+                    $io->success('Skipped empty CSV file.');
                     return 0;
                 }
                 throw new \UnexpectedValueException('CSV is empty, nothing can be imported!');
@@ -114,26 +118,38 @@ class ImportRedirectCommand extends Command
 
             $response = $this->importItems($data, $dryRun);
 
-            if ($response['ok'] > 0) {
-                $io->success(sprintf('%s redirects have been added!', $response['ok']));
+            if (!empty($response['ok'])) {
+                $msg = \sprintf(NotificationHandler::IMPORT_SUCCESS_MESSAGE, \count($response['ok']));
+                $io->success($msg);
+                $this->logger->debug($msg);
+                $this->logger->debug(\print_r($response['ok'], true));
             }
             if (!empty($response['error'])) {
                 $errorMessages = [];
-                foreach ($response['error'] as $errorCode => $messages) {
-                    $errorMessages[] = implode(LF, $messages);
+                foreach ($response['error'] as $messages) {
+                    $errorMessages = \array_merge($errorMessages, $messages);
                 }
-                $io->error('The following errors happened: ' . LF . implode(LF . LF, $errorMessages));
+                $io->error(NotificationHandler::ERROR_MESSAGE . LF . implode(LF, $errorMessages));
+                $this->logger->error(NotificationHandler::ERROR_MESSAGE);
+                $this->logger->error(\print_r($errorMessages, true));
             }
-            if ($response['skipped'] > 0) {
-                $io->note(sprintf('%s redirects skipped because source is same as target', $response['skipped']));
+            if (!empty($response['skipped'])) {
+                $msg = \sprintf(NotificationHandler::IMPORT_SKIPPED_MESSAGE, \count($response['skipped']));
+                $io->note($msg);
+                $this->logger->warning($msg);
+                $this->logger->warning(\print_r($response['skipped'], true));
             }
-            if ($response['duplicates'] > 0) {
-                $io->note(sprintf('%s redirects skipped because of duplicates', $response['duplicates']));
+            if (!empty($response['duplicates'])) {
+                $msg = \sprintf(NotificationHandler::IMPORT_DUPLICATES_MESSAGE, \count($response['duplicates']));
+                $io->note($msg);
+                $this->logger->warning($msg);
+                $this->logger->warning(\print_r($response['duplicates'], true));
             }
 
             $this->notificationHandler->sendImportResultAsEmail($response);
         } catch (\UnexpectedValueException $exception) {
             $this->notificationHandler->sendThrowableAsEmail($exception);
+            $this->logger->error($exception->getMessage(), $this->notificationHandler->throwableToArray($exception));
             $io->error($exception->getMessage());
         }
 
@@ -143,16 +159,16 @@ class ImportRedirectCommand extends Command
     protected function importItems(array $items, bool $dryRun): array
     {
         $response = [
-            'ok' => 0,
-            'skipped' => 0,
-            'duplicates' => 0,
+            'ok' => [],
+            'skipped' => [],
+            'duplicates' => [],
             'error' => []
         ];
         foreach ($items as $position => $item) {
             try {
                 $this->validateCsvHeaders($item, $position);
                 if ($this->targetEqualsSource($item['target'], $item['source'])) {
-                    $response['skipped']++;
+                    $response['skipped'][] = \sprintf('Skipping redirect "%s": It has itself as target!', $item['source']);
                     continue;
                 }
                 if ($item['target'] === 'x') {
@@ -173,11 +189,11 @@ class ImportRedirectCommand extends Command
                 }
                 $this->redirectRepository->addRedirect($item['source'], $targetUrl, $configuration, $dryRun);
 
-                $response['ok']++;
+                $response['ok'][] = 'Redirect added: ' . $item['source'] . ' => ' . $item['target'];
             } catch (DuplicateException $e) {
-                $response['duplicates']++;
+                $response['duplicates'][] = $e->getMessage();
             } catch (\Exception $e) {
-                $response['error'][$e->getCode()][$e->getMessage()] = $e->getMessage();
+                $response['error'][$e->getCode()][] = $e->getMessage();
             }
         }
 
