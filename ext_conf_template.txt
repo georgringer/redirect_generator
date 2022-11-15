@@ -2,3 +2,5 @@
 notification_email =
 # cat=basic/enable/b; type=options[error=0,warning=1,info=2]; label=LLL:EXT:redirect_generator/Resources/Private/Language/locallang_be.xlf:config.notificationLevel
 notification_level = 0
+# cat=basic/enable/c; type=boolean; label=LLL:EXT:redirect_generator/Resources/Private/Language/locallang_be.xlf:config.allowEmptyImportFile
+allow_empty_import_file = 0

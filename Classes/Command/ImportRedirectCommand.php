@@ -15,9 +15,9 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\HttpUtility;
-use TYPO3\CMS\Core\Utility\StringUtility;
 
 class ImportRedirectCommand extends Command
 {
@@ -31,16 +31,21 @@ class ImportRedirectCommand extends Command
     /** @var NotificationHandler */
     protected $notificationHandler;
 
+    /** @var ExtensionConfiguration */
+    protected $extensionConfiguration;
+
     /** @var array */
     protected $externalDomains = [];
 
     public function __construct(
         string $name = null,
-        NotificationHandler $notificationHandler
+        NotificationHandler $notificationHandler,
+        ExtensionConfiguration $extensionConfiguration
     ) {
         $this->redirectRepository = GeneralUtility::makeInstance(RedirectRepository::class);
         $this->urlMatcher = GeneralUtility::makeInstance(UrlMatcher::class);
         $this->notificationHandler = $notificationHandler;
+        $this->extensionConfiguration = $extensionConfiguration;
 
         parent::__construct($name);
     }
@@ -98,6 +103,10 @@ class ImportRedirectCommand extends Command
 
             $data = $csvReader->data;
             if (empty($data)) {
+                $allowEmptyFile = $this->extensionConfiguration->get('redirect_generator', 'allow_empty_import_file');
+                if ($allowEmptyFile) {
+                    return 0;
+                }
                 throw new \UnexpectedValueException('CSV is empty, nothing can be imported!');
             }
 
