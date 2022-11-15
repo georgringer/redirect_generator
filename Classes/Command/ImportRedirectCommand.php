@@ -121,29 +121,26 @@ class ImportRedirectCommand extends Command implements LoggerAwareInterface
             if (!empty($response['ok'])) {
                 $msg = \sprintf(NotificationHandler::IMPORT_SUCCESS_MESSAGE, \count($response['ok']));
                 $io->success($msg);
-                $this->logger->debug($msg);
-                $this->logger->debug(\print_r($response['ok'], true));
+                $this->logger->debug($msg. PHP_EOL . \implode(PHP_EOL, $response['ok']));
             }
             if (!empty($response['error'])) {
                 $errorMessages = [];
                 foreach ($response['error'] as $messages) {
                     $errorMessages = \array_merge($errorMessages, $messages);
                 }
-                $io->error(NotificationHandler::ERROR_MESSAGE . LF . implode(LF, $errorMessages));
-                $this->logger->error(NotificationHandler::ERROR_MESSAGE);
-                $this->logger->error(\print_r($errorMessages, true));
+                $msg = NotificationHandler::ERROR_MESSAGE . PHP_EOL . \implode(PHP_EOL, $errorMessages);
+                $io->error($msg);
+                $this->logger->error($msg);
             }
             if (!empty($response['skipped'])) {
                 $msg = \sprintf(NotificationHandler::IMPORT_SKIPPED_MESSAGE, \count($response['skipped']));
                 $io->note($msg);
-                $this->logger->warning($msg);
-                $this->logger->warning(\print_r($response['skipped'], true));
+                $this->logger->warning($msg . PHP_EOL . \implode(PHP_EOL, $response['skipped']));
             }
             if (!empty($response['duplicates'])) {
                 $msg = \sprintf(NotificationHandler::IMPORT_DUPLICATES_MESSAGE, \count($response['duplicates']));
                 $io->note($msg);
-                $this->logger->warning($msg);
-                $this->logger->warning(\print_r($response['duplicates'], true));
+                $this->logger->warning($msg . PHP_EOL . \implode(PHP_EOL, $response['duplicates']));
             }
 
             $this->notificationHandler->sendImportResultAsEmail($response);
