@@ -86,14 +86,15 @@ class ImportRedirectCommand extends Command
             $io->warning('Dry run enabled!');
         }
 
+        /** @var CsvReader */
         $csvReader = GeneralUtility::makeInstance(CsvReader::class);
         $csvReader->heading = true;
         $csvReader->delimiter = ';';
         $csvReader->enclosure = '';
-        $csvReader->parse($filePath);
 
         try {
             $this->validateFilePath($filePath);
+            $csvReader->parse($filePath);
 
             $data = $csvReader->data;
             if (empty($data)) {
