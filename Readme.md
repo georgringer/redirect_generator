@@ -28,6 +28,7 @@ Set the following extension configuration options to enable email notifications:
   * 0 (error): Only receive error messages
   * 1 (warning): Receive error and warning messages
   * 2 (info): Receive all messages
+* *allow_empty_import_file*: If true an empty CSV file will silently skip the import, otherwise an error is thrown
 
 ## Usage
 
