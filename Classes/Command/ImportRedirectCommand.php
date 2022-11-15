@@ -148,6 +148,15 @@ class ImportRedirectCommand extends Command implements LoggerAwareInterface
             $this->notificationHandler->sendThrowableAsEmail($exception);
             $this->logger->error($exception->getMessage(), $this->notificationHandler->throwableToArray($exception));
             $io->error($exception->getMessage());
+            return 2;
+        }
+
+        if (!empty($response['error'])) {
+            return 2;
+        }
+
+        if (!empty($response['skipped']) || !empty($response['duplicates'])) {
+            return 1;
         }
 
         return 0;
