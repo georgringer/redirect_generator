@@ -11,6 +11,11 @@ use TYPO3\CMS\Core\Utility\MailUtility;
 
 class NotificationHandler
 {
+    public const ERROR_MESSAGE = 'The following errors happened:';
+    public const IMPORT_SUCCESS_MESSAGE = '%s redirects have been added!';
+    public const IMPORT_SKIPPED_MESSAGE = '%s redirects skipped because source is same as target!';
+    public const IMPORT_DUPLICATES_MESSAGE = '%s redirects skipped because of duplicates!';
+
     /** @var ExtensionConfiguration|null */
     protected $extensionConfiguration = null;
 
@@ -48,7 +53,7 @@ class NotificationHandler
             $lines[] = $data['ok'];
         }
         if (!empty($data['error'])) {
-            $lines[] = 'The following errors happened: ';
+            $lines[] = static::ERROR_MESSAGE;
             $lines[] = $data['error'];
         }
 
@@ -71,21 +76,21 @@ class NotificationHandler
         $level = (int)$this->extensionConfiguration->get('redirect_generator', 'notification_level');
         $lines = [];
 
-        if ($data['ok'] > 0 && $level >= 2) {
-            $lines[] = \sprintf('%s redirects have been added!', $data['ok']);
+        if (!empty($data['ok']) && $level >= 2) {
+            $lines[] = \sprintf('[Ok] ' . self::IMPORT_SUCCESS_MESSAGE, \count($data['ok']));
         }
         if (!empty($data['error'])) {
-            $lines[] = 'The following errors happened: ';
+            $lines[] = '[Error] ' . self::ERROR_MESSAGE;
             foreach ($data['error'] as $errorCode => $messages) {
                 $lines[] = 'Error code ' . $errorCode . ':';
-                $lines[] = \array_merge($lines, $messages);
+                $lines = \array_merge($lines, $messages);
             }
         }
-        if ($data['skipped'] > 0 && $level >= 1) {
-            $lines[] = \sprintf('[Warning] %s redirects skipped because source is same as target', $data['skipped']);
+        if (!empty($data['skipped']) && $level >= 1) {
+            $lines[] = \sprintf('[Warning] ' .  self::IMPORT_SKIPPED_MESSAGE, \count($data['skipped']));
         }
-        if ($data['duplicates'] && $level >= 1) {
-            $lines[] = \sprintf('[Warning] %s redirects skipped because of duplicates', $data['duplicates']);
+        if (!empty($data['duplicates']) && $level >= 1) {
+            $lines[] = \sprintf('[Warning] ' . self::IMPORT_DUPLICATES_MESSAGE, \count($data['duplicates']));
         }
 
         if(!empty($lines)) {
@@ -132,7 +137,7 @@ class NotificationHandler
      * @param Throwable $error the throwable to convert
      * @return array the message and the stacktrace as a string array (including all prevoous throwables)
      */
-    protected function throwableToArray(Throwable $error): array
+    public function throwableToArray(Throwable $error): array
     {
         $result = [];
         $result[] = $error->getMessage();

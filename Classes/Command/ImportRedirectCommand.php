@@ -9,18 +9,21 @@ use GeorgRinger\RedirectGenerator\Repository\RedirectRepository;
 use GeorgRinger\RedirectGenerator\Service\CsvReader;
 use GeorgRinger\RedirectGenerator\Service\UrlMatcher;
 use GeorgRinger\RedirectGenerator\Utility\NotificationHandler;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\HttpUtility;
-use TYPO3\CMS\Core\Utility\StringUtility;
 
-class ImportRedirectCommand extends Command
+class ImportRedirectCommand extends Command implements LoggerAwareInterface
 {
+    use LoggerAwareTrait;
 
     /** @var RedirectRepository */
     protected $redirectRepository;
@@ -31,16 +34,21 @@ class ImportRedirectCommand extends Command
     /** @var NotificationHandler */
     protected $notificationHandler;
 
+    /** @var ExtensionConfiguration */
+    protected $extensionConfiguration;
+
     /** @var array */
     protected $externalDomains = [];
 
     public function __construct(
         string $name = null,
-        NotificationHandler $notificationHandler
+        NotificationHandler $notificationHandler,
+        ExtensionConfiguration $extensionConfiguration
     ) {
         $this->redirectRepository = GeneralUtility::makeInstance(RedirectRepository::class);
         $this->urlMatcher = GeneralUtility::makeInstance(UrlMatcher::class);
         $this->notificationHandler = $notificationHandler;
+        $this->extensionConfiguration = $extensionConfiguration;
 
         parent::__construct($name);
     }
@@ -86,17 +94,23 @@ class ImportRedirectCommand extends Command
             $io->warning('Dry run enabled!');
         }
 
+        /** @var CsvReader */
         $csvReader = GeneralUtility::makeInstance(CsvReader::class);
         $csvReader->heading = true;
         $csvReader->delimiter = ';';
         $csvReader->enclosure = '';
-        $csvReader->parse($filePath);
 
         try {
             $this->validateFilePath($filePath);
+            $csvReader->parse($filePath);
 
             $data = $csvReader->data;
             if (empty($data)) {
+                $allowEmptyFile = $this->extensionConfiguration->get('redirect_generator', 'allow_empty_import_file');
+                if ($allowEmptyFile) {
+                    $io->success('Skipped empty CSV file.');
+                    return 0;
+                }
                 throw new \UnexpectedValueException('CSV is empty, nothing can be imported!');
             }
 
@@ -104,27 +118,45 @@ class ImportRedirectCommand extends Command
 
             $response = $this->importItems($data, $dryRun);
 
-            if ($response['ok'] > 0) {
-                $io->success(sprintf('%s redirects have been added!', $response['ok']));
+            if (!empty($response['ok'])) {
+                $msg = \sprintf(NotificationHandler::IMPORT_SUCCESS_MESSAGE, \count($response['ok']));
+                $io->success($msg);
+                $this->logger->debug($msg. PHP_EOL . \implode(PHP_EOL, $response['ok']));
             }
             if (!empty($response['error'])) {
                 $errorMessages = [];
-                foreach ($response['error'] as $errorCode => $messages) {
-                    $errorMessages[] = implode(LF, $messages);
+                foreach ($response['error'] as $messages) {
+                    $errorMessages = \array_merge($errorMessages, $messages);
                 }
-                $io->error('The following errors happened: ' . LF . implode(LF . LF, $errorMessages));
+                $msg = NotificationHandler::ERROR_MESSAGE . PHP_EOL . \implode(PHP_EOL, $errorMessages);
+                $io->error($msg);
+                $this->logger->error($msg);
             }
-            if ($response['skipped'] > 0) {
-                $io->note(sprintf('%s redirects skipped because source is same as target', $response['skipped']));
+            if (!empty($response['skipped'])) {
+                $msg = \sprintf(NotificationHandler::IMPORT_SKIPPED_MESSAGE, \count($response['skipped']));
+                $io->note($msg);
+                $this->logger->warning($msg . PHP_EOL . \implode(PHP_EOL, $response['skipped']));
             }
-            if ($response['duplicates'] > 0) {
-                $io->note(sprintf('%s redirects skipped because of duplicates', $response['duplicates']));
+            if (!empty($response['duplicates'])) {
+                $msg = \sprintf(NotificationHandler::IMPORT_DUPLICATES_MESSAGE, \count($response['duplicates']));
+                $io->note($msg);
+                $this->logger->warning($msg . PHP_EOL . \implode(PHP_EOL, $response['duplicates']));
             }
 
             $this->notificationHandler->sendImportResultAsEmail($response);
         } catch (\UnexpectedValueException $exception) {
             $this->notificationHandler->sendThrowableAsEmail($exception);
+            $this->logger->error($exception->getMessage(), $this->notificationHandler->throwableToArray($exception));
             $io->error($exception->getMessage());
+            return 2;
+        }
+
+        if (!empty($response['error'])) {
+            return 2;
+        }
+
+        if (!empty($response['skipped']) || !empty($response['duplicates'])) {
+            return 1;
         }
 
         return 0;
@@ -133,16 +165,16 @@ class ImportRedirectCommand extends Command
     protected function importItems(array $items, bool $dryRun): array
     {
         $response = [
-            'ok' => 0,
-            'skipped' => 0,
-            'duplicates' => 0,
+            'ok' => [],
+            'skipped' => [],
+            'duplicates' => [],
             'error' => []
         ];
         foreach ($items as $position => $item) {
             try {
                 $this->validateCsvHeaders($item, $position);
                 if ($this->targetEqualsSource($item['target'], $item['source'])) {
-                    $response['skipped']++;
+                    $response['skipped'][] = \sprintf('Skipping redirect "%s": It has itself as target!', $item['source']);
                     continue;
                 }
                 if ($item['target'] === 'x') {
@@ -163,11 +195,11 @@ class ImportRedirectCommand extends Command
                 }
                 $this->redirectRepository->addRedirect($item['source'], $targetUrl, $configuration, $dryRun);
 
-                $response['ok']++;
+                $response['ok'][] = 'Redirect added: ' . $item['source'] . ' => ' . $item['target'];
             } catch (DuplicateException $e) {
-                $response['duplicates']++;
+                $response['duplicates'][] = $e->getMessage();
             } catch (\Exception $e) {
-                $response['error'][$e->getCode()][$e->getMessage()] = $e->getMessage();
+                $response['error'][$e->getCode()][] = $e->getMessage();
             }
         }
 
@@ -195,8 +227,9 @@ class ImportRedirectCommand extends Command
         return false;
     }
 
-    protected function getConfigurationFromItem(array $item)
+    protected function getConfigurationFromItem(array $item): Configuration
     {
+        /** @var Configuration */
         $configuration = GeneralUtility::makeInstance(Configuration::class);
         if (isset($item['status_code'])) {
             $configuration->setTargetStatusCode((int)$item['status_code']);
@@ -214,7 +247,7 @@ class ImportRedirectCommand extends Command
         if (!is_file($filePath)) {
             throw new \UnexpectedValueException(sprintf('File "%s" does not exist', $filePath), 1568544111);
         }
-        if (!StringUtility::endsWith(strtolower($filePath), '.csv')) {
+        if (!\str_ends_with(strtolower($filePath), '.csv')) {
             throw new \UnexpectedValueException(sprintf('File "%s" is no CSV file', $filePath), 1568544112);
         }
 

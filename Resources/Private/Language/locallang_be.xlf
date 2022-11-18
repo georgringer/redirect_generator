@@ -9,6 +9,9 @@
             <trans-unit id="config.notificationLevel" resname="config.notificationLevel">
                 <source>Level of notifications to send: Send notification of this level or below, can be one of: 0 (error), 1 (warning), 2 (info).</source>
             </trans-unit>
+            <trans-unit id="config.allowEmptyImportFile" resname="config.allowEmptyImportFile">
+                <source>Allow empty import file: If true, am empty CSV file will silenty skip the import. If false, an empty CSV file will trigger an error during import.</source>
+            </trans-unit>
         </body>
     </file>
 </xliff>
