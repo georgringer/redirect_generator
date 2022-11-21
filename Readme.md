@@ -66,6 +66,9 @@ The following options are available:
 
 * `--dry-run`: If set, the redirect won't be added
 * `--external-domains`: Provide a comma separated list of domains which are external
+* `--delete-file`: If set the CSV file is deleted after (a successful or unsuccessful) import
+
+> This command can be run in the scheduler (select *Execute console commands* as class)
 
 ### Export Redirects
 
@@ -77,3 +80,5 @@ Use the following CLI command:
 ```bash
 ./bin/typo3 redirect:export export.csv --transform-target-url
 ```
+
+> This command can be run in the scheduler (select *Execute console commands* as class)
