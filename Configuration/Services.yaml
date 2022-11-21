@@ -19,11 +19,11 @@ services:
           - name: 'console.command'
             command: 'redirect:import'
             description: 'Import redirect'
-            schedulable: false
+            schedulable: true
 
   GeorgRinger\RedirectGenerator\Command\ExportRedirectCommand:
       tags:
           - name: 'console.command'
             command: 'redirect:export'
             description: 'Export redirects as csv'
-            schedulable: false
+            schedulable: true
