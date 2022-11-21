@@ -70,6 +70,11 @@ class ImportRedirectCommand extends Command implements LoggerAwareInterface
                 null,
                 InputOption::VALUE_OPTIONAL,
                 'List of target domains which are treated as external'
+            )->addOption(
+                'delete-file',
+                null,
+                InputOption::VALUE_NONE,
+                'Delete the import file after import'
             )
             ->setHelp('Import a CSV file as redirects');
     }
@@ -149,6 +154,10 @@ class ImportRedirectCommand extends Command implements LoggerAwareInterface
             $this->logger->error($exception->getMessage(), $this->notificationHandler->throwableToArray($exception));
             $io->error($exception->getMessage());
             return 2;
+        } finally {
+            if ($input->hasOption('delete-file') && $input->getOption('delete-file') != false) {
+                \unlink($filePath);
+            }
         }
 
         if (!empty($response['error'])) {
