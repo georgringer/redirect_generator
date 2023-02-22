@@ -62,6 +62,8 @@ source;target;status_code
 
 A sample CSV file can be found at `EXT:redirect_generator/Resources/Private/Examples/ImportBasic.csv`
 
+In addition an additional column `external` can be added to the CSV. It can be 0 (false) or 1 (true). If 1, the target is interpreted as an external URL and not mapped against a TYPO3 page.
+
 The following options are available:
 
 * `--dry-run`: If set, the redirect won't be added
