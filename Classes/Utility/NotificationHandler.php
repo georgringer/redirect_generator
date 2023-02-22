@@ -14,7 +14,8 @@ class NotificationHandler
     public const ERROR_MESSAGE = 'The following errors happened:';
     public const IMPORT_SUCCESS_MESSAGE = '%s redirects have been added!';
     public const IMPORT_SKIPPED_MESSAGE = '%s redirects skipped because source is same as target!';
-    public const IMPORT_DUPLICATES_MESSAGE = '%s redirects skipped because of duplicates!';
+    public const IMPORT_DUPLICATES_CONFLICTING_MESSAGE = '%s redirects skipped because of conflicting duplicates!';
+    public const IMPORT_DUPLICATES_NON_CONFLICTING_MESSAGE = '%s redirects skipped because of non conflicting duplicates.';
 
     /** @var ExtensionConfiguration|null */
     protected $extensionConfiguration = null;
@@ -89,8 +90,17 @@ class NotificationHandler
         if (!empty($data['skipped']) && $level >= 1) {
             $lines[] = \sprintf('[Warning] ' .  self::IMPORT_SKIPPED_MESSAGE, \count($data['skipped']));
         }
-        if (!empty($data['duplicates']) && $level >= 1) {
-            $lines[] = \sprintf('[Warning] ' . self::IMPORT_DUPLICATES_MESSAGE, \count($data['duplicates']));
+        if (!empty($data['duplicates']['conflicting']) && $level >= 1) {
+            $lines[] = \sprintf(
+                '[Warning] ' . self::IMPORT_DUPLICATES_CONFLICTING_MESSAGE,
+                \count($data['duplicates']['conflicting'])
+            );
+        }
+        if (!empty($data['duplicates']['non_conflicting']) && $level >= 2) {
+            $lines[] = \sprintf(
+                '[Info] ' . self::IMPORT_DUPLICATES_NON_CONFLICTING_MESSAGE,
+                \count($data['duplicates']['non_conflicting'])
+            );
         }
 
         if(!empty($lines)) {

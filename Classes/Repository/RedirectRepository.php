@@ -5,7 +5,6 @@ namespace GeorgRinger\RedirectGenerator\Repository;
 
 use GeorgRinger\RedirectGenerator\Domain\Model\Dto\Configuration;
 use GeorgRinger\RedirectGenerator\Domain\Model\Dto\UrlInfo;
-use GeorgRinger\RedirectGenerator\Domain\Model\Dto\UrlResult;
 use GeorgRinger\RedirectGenerator\Exception\DuplicateException;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
@@ -33,7 +32,7 @@ class RedirectRepository
                 $queryBuilder->expr()->eq('source_path', $queryBuilder->createNamedParameter($urlInfo->getPathWithQuery(), \PDO::PARAM_STR))
             )
             ->execute()
-            ->fetch();
+            ->fetchAssociative();
 
         if ($row === false) {
             return null;
@@ -53,7 +52,30 @@ class RedirectRepository
     {
         $existingRow = $this->getRedirect($url);
         if (is_array($existingRow)) {
-            throw new DuplicateException(sprintf('Redirect for "%s" exists already with ID %s!', $url, $existingRow['uid']), 1568487151);
+            if ($target !== $existingRow['target']) {
+                throw new DuplicateException(
+                    \sprintf(
+                        'Redirect for "%s" exists already with ID %s! Existing target is "%s", new target would be "%s".',
+                        $url,
+                        $existingRow['uid'],
+                        $existingRow['target'],
+                        $target
+                    ),
+                    1568487151,
+                    true
+                );
+            }
+
+            throw new DuplicateException(
+                \sprintf(
+                    'Redirect for "%s" exists already with ID %s, but has the same target as the new redirect.',
+                    $url,
+                    $existingRow['uid'],
+                ),
+                1568487151,
+                false
+            );
+
         }
 
         if ($dryRun) {
@@ -88,7 +110,7 @@ class RedirectRepository
             ->select('*')
             ->from(self::TABLE)
             ->execute()
-            ->fetchAll();
+            ->fetchAllAssociative();
     }
 
     private function getConnection(): Connection
