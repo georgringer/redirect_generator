@@ -5,7 +5,8 @@ namespace GeorgRinger\RedirectGenerator\Repository;
 
 use GeorgRinger\RedirectGenerator\Domain\Model\Dto\Configuration;
 use GeorgRinger\RedirectGenerator\Domain\Model\Dto\UrlInfo;
-use GeorgRinger\RedirectGenerator\Exception\DuplicateException;
+use GeorgRinger\RedirectGenerator\Exception\ConflictingDuplicateException;
+use GeorgRinger\RedirectGenerator\Exception\NonConflictingDuplicateException;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -46,14 +47,14 @@ class RedirectRepository
      * @param string $target
      * @param Configuration $configuration
      * @param bool $dryRun
-     * @throws DuplicateException
+     * @throws ConflictingDuplicateException,NonConflictingDuplicateException
      */
     public function addRedirect(string $url, string $target, Configuration $configuration, bool $dryRun = false): void
     {
         $existingRow = $this->getRedirect($url);
         if (is_array($existingRow)) {
             if ($target !== $existingRow['target']) {
-                throw new DuplicateException(
+                throw new ConflictingDuplicateException(
                     \sprintf(
                         'Redirect for "%s" exists already with ID %s! Existing target is "%s", new target would be "%s".',
                         $url,
@@ -61,19 +62,17 @@ class RedirectRepository
                         $existingRow['target'],
                         $target
                     ),
-                    1568487151,
-                    true
+                    1568487151
                 );
             }
 
-            throw new DuplicateException(
+            throw new NonConflictingDuplicateException(
                 \sprintf(
                     'Redirect for "%s" exists already with ID %s, but has the same target as the new redirect.',
                     $url,
                     $existingRow['uid'],
                 ),
-                1568487151,
-                false
+                1568487151
             );
 
         }

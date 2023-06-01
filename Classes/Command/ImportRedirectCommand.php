@@ -4,7 +4,8 @@ declare(strict_types=1);
 namespace GeorgRinger\RedirectGenerator\Command;
 
 use GeorgRinger\RedirectGenerator\Domain\Model\Dto\Configuration;
-use GeorgRinger\RedirectGenerator\Exception\DuplicateException;
+use GeorgRinger\RedirectGenerator\Exception\ConflictingDuplicateException;
+use GeorgRinger\RedirectGenerator\Exception\NonConflictingDuplicateException;
 use GeorgRinger\RedirectGenerator\Repository\RedirectRepository;
 use GeorgRinger\RedirectGenerator\Service\CsvReader;
 use GeorgRinger\RedirectGenerator\Service\UrlMatcher;
@@ -216,12 +217,10 @@ class ImportRedirectCommand extends Command implements LoggerAwareInterface
                 $this->redirectRepository->addRedirect($item['source'], $targetUrl, $configuration, $dryRun);
 
                 $response['ok'][] = 'Redirect added: ' . $item['source'] . ' => ' . $item['target'];
-            } catch (DuplicateException $e) {
-                $arrayKey = 'non_conflicting';
-                if($e->isTargetDifferent()) {
-                    $arrayKey = 'conflicting';
-                }
-                $response['duplicates'][$arrayKey][] = $e->getMessage();
+            } catch (NonConflictingDuplicateException $e) {
+                $response['duplicates']['non_conflicting'][] = $e->getMessage();
+            } catch (ConflictingDuplicateException $e) {
+                $response['duplicates']['conflicting'][] = $e->getMessage();
             } catch (\Exception $e) {
                 $response['error'][$e->getCode()][] = $e->getMessage();
             }
