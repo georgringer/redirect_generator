@@ -5,8 +5,8 @@ namespace GeorgRinger\RedirectGenerator\Repository;
 
 use GeorgRinger\RedirectGenerator\Domain\Model\Dto\Configuration;
 use GeorgRinger\RedirectGenerator\Domain\Model\Dto\UrlInfo;
-use GeorgRinger\RedirectGenerator\Domain\Model\Dto\UrlResult;
-use GeorgRinger\RedirectGenerator\Exception\DuplicateException;
+use GeorgRinger\RedirectGenerator\Exception\ConflictingDuplicateException;
+use GeorgRinger\RedirectGenerator\Exception\NonConflictingDuplicateException;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -33,7 +33,7 @@ class RedirectRepository
                 $queryBuilder->expr()->eq('source_path', $queryBuilder->createNamedParameter($urlInfo->getPathWithQuery(), \PDO::PARAM_STR))
             )
             ->execute()
-            ->fetch();
+            ->fetchAssociative();
 
         if ($row === false) {
             return null;
@@ -47,13 +47,34 @@ class RedirectRepository
      * @param string $target
      * @param Configuration $configuration
      * @param bool $dryRun
-     * @throws DuplicateException
+     * @throws ConflictingDuplicateException,NonConflictingDuplicateException
      */
     public function addRedirect(string $url, string $target, Configuration $configuration, bool $dryRun = false): void
     {
         $existingRow = $this->getRedirect($url);
         if (is_array($existingRow)) {
-            throw new DuplicateException(sprintf('Redirect for "%s" exists already with ID %s!', $url, $existingRow['uid']), 1568487151);
+            if ($target !== $existingRow['target']) {
+                throw new ConflictingDuplicateException(
+                    \sprintf(
+                        'Redirect for "%s" exists already with ID %s! Existing target is "%s", new target would be "%s".',
+                        $url,
+                        $existingRow['uid'],
+                        $existingRow['target'],
+                        $target
+                    ),
+                    1568487151
+                );
+            }
+
+            throw new NonConflictingDuplicateException(
+                \sprintf(
+                    'Redirect for "%s" exists already with ID %s, but has the same target as the new redirect.',
+                    $url,
+                    $existingRow['uid'],
+                ),
+                1568487151
+            );
+
         }
 
         if ($dryRun) {
@@ -88,7 +109,7 @@ class RedirectRepository
             ->select('*')
             ->from(self::TABLE)
             ->execute()
-            ->fetchAll();
+            ->fetchAllAssociative();
     }
 
     private function getConnection(): Connection

@@ -4,7 +4,8 @@ declare(strict_types=1);
 namespace GeorgRinger\RedirectGenerator\Command;
 
 use GeorgRinger\RedirectGenerator\Domain\Model\Dto\Configuration;
-use GeorgRinger\RedirectGenerator\Exception\DuplicateException;
+use GeorgRinger\RedirectGenerator\Exception\ConflictingDuplicateException;
+use GeorgRinger\RedirectGenerator\Exception\NonConflictingDuplicateException;
 use GeorgRinger\RedirectGenerator\Repository\RedirectRepository;
 use GeorgRinger\RedirectGenerator\Service\CsvReader;
 use GeorgRinger\RedirectGenerator\Service\UrlMatcher;
@@ -142,10 +143,21 @@ class ImportRedirectCommand extends Command implements LoggerAwareInterface
                 $io->note($msg);
                 $this->logger->warning($msg . PHP_EOL . \implode(PHP_EOL, $response['skipped']));
             }
-            if (!empty($response['duplicates'])) {
-                $msg = \sprintf(NotificationHandler::IMPORT_DUPLICATES_MESSAGE, \count($response['duplicates']));
+            if (!empty($response['duplicates']['conflicting'])) {
+                $msg = \sprintf(
+                    NotificationHandler::IMPORT_DUPLICATES_CONFLICTING_MESSAGE,
+                    \count($response['duplicates']['conflicting'])
+                );
                 $io->note($msg);
-                $this->logger->warning($msg . PHP_EOL . \implode(PHP_EOL, $response['duplicates']));
+                $this->logger->warning($msg . PHP_EOL . \implode(PHP_EOL, $response['duplicates']['conflicting']));
+            }
+            if (!empty($response['duplicates']['non_conflicting'])) {
+                $msg = \sprintf(
+                    NotificationHandler::IMPORT_DUPLICATES_NON_CONFLICTING_MESSAGE,
+                    \count($response['duplicates']['non_conflicting'])
+                );
+                $io->info($msg);
+                $this->logger->info($msg . PHP_EOL . \implode(PHP_EOL, $response['duplicates']['non_conflicting']));
             }
 
             $this->notificationHandler->sendImportResultAsEmail($response);
@@ -164,7 +176,7 @@ class ImportRedirectCommand extends Command implements LoggerAwareInterface
             return 2;
         }
 
-        if (!empty($response['skipped']) || !empty($response['duplicates'])) {
+        if (!empty($response['skipped']) || !empty($response['duplicates']['conflicting'])) {
             return 1;
         }
 
@@ -205,8 +217,10 @@ class ImportRedirectCommand extends Command implements LoggerAwareInterface
                 $this->redirectRepository->addRedirect($item['source'], $targetUrl, $configuration, $dryRun);
 
                 $response['ok'][] = 'Redirect added: ' . $item['source'] . ' => ' . $item['target'];
-            } catch (DuplicateException $e) {
-                $response['duplicates'][] = $e->getMessage();
+            } catch (NonConflictingDuplicateException $e) {
+                $response['duplicates']['non_conflicting'][] = $e->getMessage();
+            } catch (ConflictingDuplicateException $e) {
+                $response['duplicates']['conflicting'][] = $e->getMessage();
             } catch (\Exception $e) {
                 $response['error'][$e->getCode()][] = $e->getMessage();
             }
