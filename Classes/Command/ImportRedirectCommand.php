@@ -26,25 +26,16 @@ class ImportRedirectCommand extends Command implements LoggerAwareInterface
 {
     use LoggerAwareTrait;
 
-    /** @var RedirectRepository */
-    protected $redirectRepository;
-
-    /** @var UrlMatcher */
-    protected $urlMatcher;
-
-    /** @var NotificationHandler */
-    protected $notificationHandler;
-
-    /** @var ExtensionConfiguration */
-    protected $extensionConfiguration;
-
-    /** @var array */
-    protected $externalDomains = [];
+    protected RedirectRepository $redirectRepository;
+    protected UrlMatcher $urlMatcher;
+    protected NotificationHandler $notificationHandler;
+    protected ExtensionConfiguration $extensionConfiguration;
+    protected array $externalDomains = [];
 
     public function __construct(
-        string $name = null,
-        NotificationHandler $notificationHandler,
-        ExtensionConfiguration $extensionConfiguration
+        string $name = '',
+        NotificationHandler $notificationHandler = null,
+        ExtensionConfiguration $extensionConfiguration = null
     ) {
         $this->redirectRepository = GeneralUtility::makeInstance(RedirectRepository::class);
         $this->urlMatcher = GeneralUtility::makeInstance(UrlMatcher::class);
@@ -54,9 +45,6 @@ class ImportRedirectCommand extends Command implements LoggerAwareInterface
         parent::__construct($name);
     }
 
-    /**
-     * @inheritDoc
-     */
     public function configure()
     {
         $this->setDescription('Import redirect')
@@ -80,12 +68,6 @@ class ImportRedirectCommand extends Command implements LoggerAwareInterface
             ->setHelp('Import a CSV file as redirects');
     }
 
-    /**
-     * Executes the command for importing redirects
-     *
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $io = new SymfonyStyle($input, $output);

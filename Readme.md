@@ -10,7 +10,9 @@ Each target entry will be matched by the routing configuration. If the target is
 
 ### Requirements
 
-* TYPO3 10 / 11
+* TYPO3
+  * TYPO3 12 LTS: dev-master + 2.0.0
+  * TYPO3 10/11 LTS: 1.0.0
 * EXT:redirects
 
 ### Setup

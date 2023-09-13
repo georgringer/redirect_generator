@@ -11,34 +11,20 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 class UrlResult
 {
 
-    /** @var SiteRouteResult */
-    protected $siteRouteResult;
+    protected SiteRouteResult $siteRouteResult;
+    protected PageArguments $pageArguments;
 
-    /** @var PageArguments */
-    protected $pageArguments;
-
-    /**
-     * UrlResult constructor.
-     * @param SiteRouteResult $siteRouteResult
-     * @param PageArguments $pageArguments
-     */
     public function __construct(SiteRouteResult $siteRouteResult, PageArguments $pageArguments)
     {
         $this->siteRouteResult = $siteRouteResult;
         $this->pageArguments = $pageArguments;
     }
 
-    /**
-     * @return SiteRouteResult
-     */
     public function getSiteRouteResult(): SiteRouteResult
     {
         return $this->siteRouteResult;
     }
 
-    /**
-     * @return PageArguments
-     */
     public function getPageArguments(): PageArguments
     {
         return $this->pageArguments;
@@ -47,7 +33,7 @@ class UrlResult
     public function getLinkString(): string
     {
         $parameters = [
-            'uid' => $this->pageArguments->getPageId()
+            'uid' => $this->pageArguments->getPageId(),
         ];
 
         // language

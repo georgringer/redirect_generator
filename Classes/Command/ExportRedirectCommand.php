@@ -21,17 +21,15 @@ class ExportRedirectCommand extends Command
     protected $notificationHandler;
 
     public function __construct(
-        string $name = null,
-        NotificationHandler $notificationHandler
-    ) {
+        string $name = '',
+        NotificationHandler $notificationHandler = null
+    )
+    {
         $this->notificationHandler = $notificationHandler;
 
         parent::__construct($name);
     }
 
-    /**
-     * @inheritDoc
-     */
     public function configure()
     {
         $this->setDescription('Export redirects as csv')
@@ -45,12 +43,6 @@ class ExportRedirectCommand extends Command
             ->setHelp('Export all redirects as CSV');
     }
 
-    /**
-     * Executes the command for adding a redirect
-     *
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $io = new SymfonyStyle($input, $output);

@@ -6,12 +6,15 @@ namespace GeorgRinger\RedirectGenerator\Service;
 
 use GeorgRinger\RedirectGenerator\Repository\RedirectRepository;
 use Psr\Http\Message\UriInterface;
+use TYPO3\CMS\Core\Context\Context;
+use TYPO3\CMS\Core\Domain\Repository\PageRepository;
 use TYPO3\CMS\Core\Http\ServerRequest;
 use TYPO3\CMS\Core\Http\Uri;
 use TYPO3\CMS\Core\LinkHandling\LinkService;
 use TYPO3\CMS\Core\Resource\Exception\InvalidPathException;
 use TYPO3\CMS\Core\Resource\File;
 use TYPO3\CMS\Core\Resource\Folder;
+use TYPO3\CMS\Core\Routing\PageArguments;
 use TYPO3\CMS\Core\Routing\SiteMatcher;
 use TYPO3\CMS\Core\Site\Entity\NullSite;
 use TYPO3\CMS\Core\Site\Entity\SiteInterface;
@@ -20,27 +23,22 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\HttpUtility;
 use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
 use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
-use TYPO3\CMS\Frontend\Page\PageRepository;
 use TYPO3\CMS\Frontend\Typolink\AbstractTypolinkBuilder;
 use TYPO3\CMS\Frontend\Typolink\UnableToLinkException;
-use TYPO3\CMS\Redirects\Service\RedirectCacheService;
 
 class ExportService
 {
 
-    /** @var UrlMatcher */
-    protected $urlMatcher;
-
-    protected $siteCache = [];
-
-    protected $targetUrlCache = [];
+    protected UrlMatcher $urlMatcher;
+    protected array $siteCache = [];
+    protected array $targetUrlCache = [];
 
     public function __construct()
     {
         $this->urlMatcher = GeneralUtility::makeInstance(UrlMatcher::class);
     }
 
-    public function run(bool $transformTargetUrl = false)
+    public function run(bool $transformTargetUrl = false): array
     {
         $redirects = $this->fetchRedirects();
 
@@ -207,24 +205,24 @@ class ExportService
         }
         // disable page errors
         $GLOBALS['TYPO3_CONF_VARS']['FE']['pageUnavailable_handling'] = false;
+        $feuser = GeneralUtility::makeInstance(FrontendUserAuthentication::class);
         $controller = GeneralUtility::makeInstance(
             TypoScriptFrontendController::class,
-            null,
-            $site ? $site->getRootPageId() : $GLOBALS['TSFE']->id,
-            0
+            GeneralUtility::makeInstance(Context::class),
+            $site,
+            $site->getDefaultLanguage(),
+            new PageArguments($site->getRootPageId(), '0', []),
+            $feuser
         );
-        $controller->fe_user = $GLOBALS['TSFE']->fe_user ?? GeneralUtility::makeInstance(FrontendUserAuthentication::class);
-        $controller->fetch_the_id();
+//        $controller->determineId($originalRequest);
         $controller->calculateLinkVars($queryParams);
-        $GLOBALS['TSFE'] = $controller;
-        $controller->getConfigArray();
-        $controller->settingLanguage();
-        $controller->settingLocale();
-        $controller->newCObj();
-        if (!$GLOBALS['TSFE'] instanceof TypoScriptFrontendController) {
+//        $newRequest = $controller->getFromCache($originalRequest);
+//        $controller->releaseLocks();
+//        $controller->newCObj($newRequest);
+        if (!isset($GLOBALS['TSFE']) || !$GLOBALS['TSFE'] instanceof TypoScriptFrontendController) {
             $GLOBALS['TSFE'] = $controller;
         }
-        if (!$GLOBALS['TSFE']->sys_page instanceof PageRepository) {
+        if (!$GLOBALS['TSFE']->sys_page instanceof \TYPO3\CMS\Core\Domain\Repository\PageRepository) {
             $GLOBALS['TSFE']->sys_page = GeneralUtility::makeInstance(PageRepository::class);
         }
         return $controller;

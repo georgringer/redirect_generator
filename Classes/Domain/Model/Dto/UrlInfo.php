@@ -10,17 +10,10 @@ use TYPO3\CMS\Core\Routing\SiteRouteResult;
 class UrlInfo
 {
 
-    /** @var string */
-    protected $scheme = '';
-
-    /** @var string */
-    protected $host = '';
-
-    /** @var string */
-    protected $path = '';
-
-    /** @var string */
-    protected $query = '';
+    protected string $scheme = '';
+    protected string $host = '';
+    protected string $path = '';
+    protected string $query = '';
 
 
     public function __construct(string $url)
@@ -33,33 +26,21 @@ class UrlInfo
         $this->query = $split['query'] ?? '';
     }
 
-    /**
-     * @return string
-     */
     public function getScheme(): string
     {
         return $this->scheme;
     }
 
-    /**
-     * @return string
-     */
     public function getHost(): string
     {
         return $this->host;
     }
 
-    /**
-     * @return string
-     */
     public function getPath(): string
     {
         return $this->path;
     }
 
-    /**
-     * @return string
-     */
     public function getQuery(): string
     {
         return $this->query;
