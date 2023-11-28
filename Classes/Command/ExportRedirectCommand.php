@@ -27,7 +27,7 @@ class ExportRedirectCommand extends Command
     {
         $this->notificationHandler = $notificationHandler;
 
-        parent::__construct($name);
+        parent::__construct('redirect:export');
     }
 
     public function configure()

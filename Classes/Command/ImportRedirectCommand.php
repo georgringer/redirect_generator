@@ -42,7 +42,7 @@ class ImportRedirectCommand extends Command implements LoggerAwareInterface
         $this->notificationHandler = $notificationHandler;
         $this->extensionConfiguration = $extensionConfiguration;
 
-        parent::__construct($name);
+        parent::__construct('redirect:import');
     }
 
     public function configure()
