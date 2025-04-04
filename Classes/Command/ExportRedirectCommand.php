@@ -30,7 +30,7 @@ class ExportRedirectCommand extends Command
         parent::__construct('redirect:export');
     }
 
-    public function configure()
+    public function configure(): void
     {
         $this->setDescription('Export redirects as csv')
             ->addArgument('target', InputArgument::REQUIRED, 'Target')
@@ -43,7 +43,7 @@ class ExportRedirectCommand extends Command
             ->setHelp('Export all redirects as CSV');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
         $io->title($this->getDescription());
