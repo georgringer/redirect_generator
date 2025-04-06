@@ -16,8 +16,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class AddRedirectCommand extends Command
 {
-
-    public function configure()
+    public function configure(): void
     {
         $this->setDescription('Add redirect to the redirects table')
             ->addArgument('source', InputArgument::REQUIRED, 'Source')
@@ -38,7 +37,7 @@ class AddRedirectCommand extends Command
             ->setHelp('Add a single redirect from the given source url to the target url. Target URL must be a valid page!');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
         $io->title($this->getDescription());

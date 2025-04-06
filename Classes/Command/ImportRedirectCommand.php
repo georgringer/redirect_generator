@@ -45,7 +45,7 @@ class ImportRedirectCommand extends Command implements LoggerAwareInterface
         parent::__construct('redirect:import');
     }
 
-    public function configure()
+    public function configure(): void
     {
         $this->setDescription('Import redirect')
             ->addArgument('file', InputArgument::REQUIRED, 'File to be imported')
@@ -68,7 +68,7 @@ class ImportRedirectCommand extends Command implements LoggerAwareInterface
             ->setHelp('Import a CSV file as redirects');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
         $io->title($this->getDescription());
