@@ -34,6 +34,13 @@ class AddRedirectCommand extends Command
                 'Define the status code, can be 301,302,303 or 307',
                 307
             )
+            ->addOption(
+                'sourceHost',
+                'sourceHost',
+                InputOption::VALUE_OPTIONAL,
+                'Define the source host domain',
+                ''
+            )
             ->setHelp('Add a single redirect from the given source url to the target url. Target URL must be a valid page!');
     }
 
@@ -50,6 +57,7 @@ class AddRedirectCommand extends Command
 
         $source = $input->getArgument('source');
         $target = $input->getArgument('target');
+        $sourceHost = $input->getArgument('sourceHost');
 
         $matcher = GeneralUtility::makeInstance(UrlMatcher::class);
         $configuration = $this->getConfigurationFromInput($input);
@@ -61,7 +69,7 @@ class AddRedirectCommand extends Command
                 $io->success('The following redirect would have been added:');
             } else {
                 $redirectRepository = GeneralUtility::makeInstance(RedirectRepository::class);
-                $redirectRepository->addRedirect($source, $result->getLinkString(), $configuration, $dryRun);
+                $redirectRepository->addRedirect($source, $result->getLinkString(), $configuration, $sourceHost, $dryRun);
                 $io->success('Redirect has been added!');
             }
 
@@ -69,6 +77,7 @@ class AddRedirectCommand extends Command
             $io->table([], [
                 ['Status Code', $configuration->getTargetStatusCode()],
                 ['Source', $source],
+                ['Source Host', $sourceHost],
                 ['Target', $target],
                 ['Target Page', $result->getPageArguments()->getPageId()],
                 ['Target Language', sprintf('%s (ID %s)', $language->getTypo3Language(), $language->getLanguageId())],

@@ -183,6 +183,7 @@ class ImportRedirectCommand extends Command implements LoggerAwareInterface
                 if ($item['target'] === 'x') {
                     continue;
                 }
+                $sourceHost = $item['source_host'] ?? '';
 
                 $configuration = $this->getConfigurationFromItem($item);
                 if ($item['external'] ?? '' === '1' || $this->isExternalDomain($item['target'] ?? '')) {
@@ -196,7 +197,7 @@ class ImportRedirectCommand extends Command implements LoggerAwareInterface
                         $targetUrl .= HttpUtility::buildQueryString($routeArguments, '&');
                     }
                 }
-                $this->redirectRepository->addRedirect($item['source'], $targetUrl, $configuration, $dryRun);
+                $this->redirectRepository->addRedirect($item['source'], $targetUrl, $configuration, $sourceHost, $dryRun);
 
                 $response['ok'][] = 'Redirect added: ' . $item['source'] . ' => ' . $item['target'];
             } catch (NonConflictingDuplicateException $e) {

@@ -42,12 +42,13 @@ class RedirectRepository
 
     /**
      * @param string $url
+     * @param string $sourceHost
      * @param string $target
      * @param Configuration $configuration
      * @param bool $dryRun
      * @throws ConflictingDuplicateException,NonConflictingDuplicateException
      */
-    public function addRedirect(string $url, string $target, Configuration $configuration, bool $dryRun = false): void
+    public function addRedirect(string $url, string $target, Configuration $configuration, string $sourceHost = '', bool $dryRun = false): void
     {
         $existingRow = $this->getRedirect($url);
         if (is_array($existingRow)) {
@@ -92,7 +93,7 @@ class RedirectRepository
             'target_statuscode' => $configuration->getTargetStatusCode(),
             'disable_hitcount' => $configuration->getDisableHitCount() ? 1 : 0,
             'respect_query_parameters' => $configuration->getRespectQueryParameters() ? 1 : 0,
-            'source_host' => $urlInfo->getHost() ?: '*',
+            'source_host' => $sourceHost ?: $urlInfo->getHost() ?: '*',
             'source_path' => $urlInfo->getPathWithQuery(),
             'target' => $target,
         ];
