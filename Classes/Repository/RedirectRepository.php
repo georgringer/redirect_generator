@@ -24,11 +24,11 @@ class RedirectRepository
         $row = $queryBuilder->select('*')
             ->from(self::TABLE)
             ->where(
-                $queryBuilder->expr()->orX(
-                    $queryBuilder->expr()->eq('source_host', $queryBuilder->createNamedParameter('*', \PDO::PARAM_STR)),
-                    $queryBuilder->expr()->eq('source_host', $queryBuilder->createNamedParameter($urlInfo->getHost(), \PDO::PARAM_STR))
+                $queryBuilder->expr()->or(
+                    $queryBuilder->expr()->eq('source_host', $queryBuilder->createNamedParameter('*', Connection::PARAM_STR)),
+                    $queryBuilder->expr()->eq('source_host', $queryBuilder->createNamedParameter($urlInfo->getHost(), Connection::PARAM_STR))
                 ),
-                $queryBuilder->expr()->eq('source_path', $queryBuilder->createNamedParameter($urlInfo->getPathWithQuery(), \PDO::PARAM_STR))
+                $queryBuilder->expr()->eq('source_path', $queryBuilder->createNamedParameter($urlInfo->getPathWithQuery(), Connection::PARAM_STR))
             )
             ->executeQuery()
             ->fetchAssociative();
