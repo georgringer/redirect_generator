@@ -22,7 +22,7 @@ class ExportRedirectCommand extends Command
 
     public function __construct(
         string $name = '',
-        NotificationHandler $notificationHandler = null
+        ?NotificationHandler $notificationHandler = null
     )
     {
         $this->notificationHandler = $notificationHandler;
