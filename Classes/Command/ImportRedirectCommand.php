@@ -34,8 +34,8 @@ class ImportRedirectCommand extends Command implements LoggerAwareInterface
 
     public function __construct(
         string $name = '',
-        NotificationHandler $notificationHandler = null,
-        ExtensionConfiguration $extensionConfiguration = null
+        ?NotificationHandler $notificationHandler = null,
+        ?ExtensionConfiguration $extensionConfiguration = null
     ) {
         $this->redirectRepository = GeneralUtility::makeInstance(RedirectRepository::class);
         $this->urlMatcher = GeneralUtility::makeInstance(UrlMatcher::class);
