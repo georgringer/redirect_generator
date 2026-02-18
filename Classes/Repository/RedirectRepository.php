@@ -10,6 +10,7 @@ use GeorgRinger\RedirectGenerator\Exception\NonConflictingDuplicateException;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Redirects\Utility\RedirectConflict;
 
 class RedirectRepository
 {
@@ -95,6 +96,7 @@ class RedirectRepository
             'source_host' => $urlInfo->getHost() ?: '*',
             'source_path' => $urlInfo->getPathWithQuery(),
             'target' => $target,
+            'integrity_status' => RedirectConflict::NO_CONFLICT,
         ];
         $connection->insert(self::TABLE, $data);
     }
