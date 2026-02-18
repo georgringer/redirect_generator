@@ -96,8 +96,12 @@ class RedirectRepository
             'source_host' => $urlInfo->getHost() ?: '*',
             'source_path' => $urlInfo->getPathWithQuery(),
             'target' => $target,
-            'integrity_status' => RedirectConflict::NO_CONFLICT,
         ];
+
+        if (class_exists(RedirectConflict::class)) {
+            $data['integrity_status'] = RedirectConflict::NO_CONFLICT;
+        }
+
         $connection->insert(self::TABLE, $data);
     }
 
