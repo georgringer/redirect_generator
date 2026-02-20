@@ -9,6 +9,7 @@ use GeorgRinger\RedirectGenerator\Exception\ConflictingDuplicateException;
 use GeorgRinger\RedirectGenerator\Exception\NonConflictingDuplicateException;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Information\Typo3Version;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class RedirectRepository
@@ -96,6 +97,11 @@ class RedirectRepository
             'source_path' => $urlInfo->getPathWithQuery(),
             'target' => $target,
         ];
+
+        if ((new Typo3Version())->getMajorVersion() >= 13) {
+            $data['integrity_status'] = \TYPO3\CMS\Redirects\Utility\RedirectConflict::NO_CONFLICT;
+        }
+
         $connection->insert(self::TABLE, $data);
     }
 
