@@ -21,10 +21,10 @@ final class ImportRedirectCommandTest extends TestCase
     protected function setUp(): void
     {
         $this->subject = new ImportRedirectCommand(
-            $this->createMock(RedirectRepository::class),
-            $this->createMock(UrlMatcher::class),
-            $this->createMock(NotificationHandler::class),
-            $this->createMock(ExtensionConfiguration::class),
+            $this->createStub(RedirectRepository::class),
+            $this->createStub(UrlMatcher::class),
+            $this->createStub(NotificationHandler::class),
+            $this->createStub(ExtensionConfiguration::class),
         );
     }
 

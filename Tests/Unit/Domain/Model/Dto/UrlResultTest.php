@@ -16,13 +16,13 @@ final class UrlResultTest extends TestCase
     #[Test]
     public function getLinkStringForDefaultLanguageOmitsLParameter(): void
     {
-        $language = $this->createMock(SiteLanguage::class);
+        $language = $this->createStub(SiteLanguage::class);
         $language->method('getLanguageId')->willReturn(0);
 
-        $routeResult = $this->createMock(SiteRouteResult::class);
+        $routeResult = $this->createStub(SiteRouteResult::class);
         $routeResult->method('getLanguage')->willReturn($language);
 
-        $pageArguments = $this->createMock(PageArguments::class);
+        $pageArguments = $this->createStub(PageArguments::class);
         $pageArguments->method('getPageId')->willReturn(42);
 
         $result = new UrlResult($routeResult, $pageArguments);
@@ -33,13 +33,13 @@ final class UrlResultTest extends TestCase
     #[Test]
     public function getLinkStringForNonDefaultLanguageIncludesLParameter(): void
     {
-        $language = $this->createMock(SiteLanguage::class);
+        $language = $this->createStub(SiteLanguage::class);
         $language->method('getLanguageId')->willReturn(2);
 
-        $routeResult = $this->createMock(SiteRouteResult::class);
+        $routeResult = $this->createStub(SiteRouteResult::class);
         $routeResult->method('getLanguage')->willReturn($language);
 
-        $pageArguments = $this->createMock(PageArguments::class);
+        $pageArguments = $this->createStub(PageArguments::class);
         $pageArguments->method('getPageId')->willReturn(5);
 
         $result = new UrlResult($routeResult, $pageArguments);
@@ -50,10 +50,10 @@ final class UrlResultTest extends TestCase
     #[Test]
     public function getLinkStringWithNullLanguageOmitsLParameter(): void
     {
-        $routeResult = $this->createMock(SiteRouteResult::class);
+        $routeResult = $this->createStub(SiteRouteResult::class);
         $routeResult->method('getLanguage')->willReturn(null);
 
-        $pageArguments = $this->createMock(PageArguments::class);
+        $pageArguments = $this->createStub(PageArguments::class);
         $pageArguments->method('getPageId')->willReturn(1);
 
         $result = new UrlResult($routeResult, $pageArguments);
@@ -64,10 +64,10 @@ final class UrlResultTest extends TestCase
     #[Test]
     public function gettersReturnInjectedObjects(): void
     {
-        $routeResult = $this->createMock(SiteRouteResult::class);
+        $routeResult = $this->createStub(SiteRouteResult::class);
         $routeResult->method('getLanguage')->willReturn(null);
 
-        $pageArguments = $this->createMock(PageArguments::class);
+        $pageArguments = $this->createStub(PageArguments::class);
         $pageArguments->method('getPageId')->willReturn(1);
 
         $result = new UrlResult($routeResult, $pageArguments);
