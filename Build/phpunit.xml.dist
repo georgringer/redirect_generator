@@ -15,9 +15,4 @@
             <directory>../Tests/Unit/</directory>
         </testsuite>
     </testsuites>
-    <source>
-        <include>
-            <directory>../Classes/</directory>
-        </include>
-    </source>
 </phpunit>

@@ -5,14 +5,12 @@ declare(strict_types=1);
 namespace GeorgRinger\RedirectGenerator\Tests\Unit\Domain\Model\Dto;
 
 use GeorgRinger\RedirectGenerator\Domain\Model\Dto\UrlResult;
-use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use TYPO3\CMS\Core\Routing\PageArguments;
 use TYPO3\CMS\Core\Routing\SiteRouteResult;
 use TYPO3\CMS\Core\Site\Entity\SiteLanguage;
 
-#[CoversClass(UrlResult::class)]
 final class UrlResultTest extends TestCase
 {
     #[Test]

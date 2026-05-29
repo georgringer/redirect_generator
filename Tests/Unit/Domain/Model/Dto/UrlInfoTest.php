@@ -5,11 +5,9 @@ declare(strict_types=1);
 namespace GeorgRinger\RedirectGenerator\Tests\Unit\Domain\Model\Dto;
 
 use GeorgRinger\RedirectGenerator\Domain\Model\Dto\UrlInfo;
-use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
-#[CoversClass(UrlInfo::class)]
 final class UrlInfoTest extends TestCase
 {
     #[Test]

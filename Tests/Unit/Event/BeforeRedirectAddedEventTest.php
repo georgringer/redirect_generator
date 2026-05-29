@@ -6,11 +6,9 @@ namespace GeorgRinger\RedirectGenerator\Tests\Unit\Event;
 
 use GeorgRinger\RedirectGenerator\Domain\Model\Dto\Configuration;
 use GeorgRinger\RedirectGenerator\Event\BeforeRedirectAddedEvent;
-use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
-#[CoversClass(BeforeRedirectAddedEvent::class)]
 final class BeforeRedirectAddedEventTest extends TestCase
 {
     #[Test]

@@ -9,13 +9,11 @@ use GeorgRinger\RedirectGenerator\Domain\Model\Dto\Configuration;
 use GeorgRinger\RedirectGenerator\Repository\RedirectRepository;
 use GeorgRinger\RedirectGenerator\Service\UrlMatcher;
 use GeorgRinger\RedirectGenerator\Utility\NotificationHandler;
-use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 
-#[CoversClass(ImportRedirectCommand::class)]
 final class ImportRedirectCommandTest extends TestCase
 {
     private ImportRedirectCommand $subject;
