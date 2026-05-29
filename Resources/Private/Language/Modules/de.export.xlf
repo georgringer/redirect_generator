@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file source-language="en" target-language="de" datatype="plaintext" original="EXT:redirect_generator/Resources/Private/Language/Modules/export.xlf" product-name="redirect_generator">
+    <header/>
+    <body>
+      <trans-unit id="title">
+        <source>Export Redirects</source>
+        <target>Weiterleitungen exportieren</target>
+      </trans-unit>
+      <trans-unit id="short_description">
+        <source>Export redirects as CSV</source>
+        <target>Weiterleitungen als CSV exportieren</target>
+      </trans-unit>
+      <trans-unit id="description">
+        <source>Export existing redirects to CSV for review or re-import.</source>
+        <target>Vorhandene Weiterleitungen zur Überprüfung oder zum Reimport als CSV exportieren.</target>
+      </trans-unit>
+      <trans-unit id="heading">
+        <source>Export Redirects</source>
+        <target>Weiterleitungen exportieren</target>
+      </trans-unit>
+      <trans-unit id="form.redirectType">
+        <source>Filter by redirect type</source>
+        <target>Nach Weiterleitungstyp filtern</target>
+      </trans-unit>
+      <trans-unit id="form.redirectType.all">
+        <source>All</source>
+        <target>Alle</target>
+      </trans-unit>
+      <trans-unit id="form.creationType">
+        <source>Filter by creation type</source>
+        <target>Nach Erstellungstyp filtern</target>
+      </trans-unit>
+      <trans-unit id="form.creationType.all">
+        <source>All</source>
+        <target>Alle</target>
+      </trans-unit>
+      <trans-unit id="form.resolveTarget">
+        <source>Resolve target URLs</source>
+        <target>Ziel-URLs auflösen</target>
+      </trans-unit>
+      <trans-unit id="form.resolveTarget.description">
+        <source>Convert stored t3://page links to readable URLs.</source>
+        <target>Gespeicherte t3://page-Links in lesbare URLs umwandeln.</target>
+      </trans-unit>
+      <trans-unit id="form.submit">
+        <source>Export</source>
+        <target>Exportieren</target>
+      </trans-unit>
+      <trans-unit id="result.empty">
+        <source>No redirects found for the selected filter.</source>
+        <target>Keine Weiterleitungen für den gewählten Filter gefunden.</target>
+      </trans-unit>
+      <trans-unit id="result.count">
+        <source>redirects exported</source>
+        <target>Weiterleitungen exportiert</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

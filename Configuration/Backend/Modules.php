@@ -32,7 +32,7 @@ return [
         'parent' => 'link_management',
         'access' => 'user',
         'path' => '/module/link-management/redirect-import',
-        'iconIdentifier' => 'actions-upload',
+        'iconIdentifier' => 'actions-database-import',
         'labels' => 'redirect_generator.modules.import',
         'routes' => [
             '_default' => [
@@ -44,7 +44,7 @@ return [
         'parent' => 'link_management',
         'access' => 'user',
         'path' => '/module/link-management/redirect-export',
-        'iconIdentifier' => 'actions-download',
+        'iconIdentifier' => 'actions-database-export',
         'labels' => 'redirect_generator.modules.export',
         'routes' => [
             '_default' => [

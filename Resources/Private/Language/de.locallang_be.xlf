@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+    <file source-language="en" target-language="de" datatype="plaintext" original="EXT:redirect_generator/Resources/Private/Language/locallang_be.xlf" product-name="redirect_generator">
+        <header/>
+        <body>
+            <trans-unit id="config.contificationEmail" resname="config.contificationEmail">
+                <source>E-Mails for notifications: A comma separated list of e-mail addresses to send notification e-mails, keep empty to disable the feature.</source>
+                <target>E-Mails für Benachrichtigungen: Kommagetrennte Liste von E-Mail-Adressen für Benachrichtigungs-E-Mails. Leer lassen, um die Funktion zu deaktivieren.</target>
+            </trans-unit>
+            <trans-unit id="config.notificationLevel" resname="config.notificationLevel">
+                <source>Level of notifications to send: Send notification of this level or below, can be one of: 0 (error), 1 (warning), 2 (info).</source>
+                <target>Benachrichtigungsstufe: Benachrichtigungen dieser Stufe oder darunter versenden. Mögliche Werte: 0 (Fehler), 1 (Warnung), 2 (Info).</target>
+            </trans-unit>
+            <trans-unit id="config.allowEmptyImportFile" resname="config.allowEmptyImportFile">
+                <source>Allow empty import file: If true, am empty CSV file will silenty skip the import. If false, an empty CSV file will trigger an error during import.</source>
+                <target>Leere Importdatei erlauben: Bei true wird eine leere CSV-Datei stillschweigend übersprungen. Bei false wird eine leere CSV-Datei beim Import als Fehler behandelt.</target>
+            </trans-unit>
+        </body>
+    </file>
+</xliff>

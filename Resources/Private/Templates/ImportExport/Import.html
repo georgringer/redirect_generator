@@ -24,7 +24,7 @@
                 <f:translate key="LLL:EXT:redirect_generator/Resources/Private/Language/Modules/import.xlf:form.csvContent" />
             </label>
             <textarea class="form-control font-monospace" rows="12"
-                placeholder="/old-path;https://example.com/new-path"></textarea>
+                placeholder="/old-path;{firstSiteDomain}/new-path"></textarea>
             <div class="form-text">
                 <f:translate key="LLL:EXT:redirect_generator/Resources/Private/Language/Modules/import.xlf:form.csvContent.description" />
             </div>
@@ -69,6 +69,26 @@
         </button>
 
     </fieldset>
+
+    <details class="mt-4">
+        <summary class="fw-bold mb-2">
+            <f:translate key="LLL:EXT:redirect_generator/Resources/Private/Language/Modules/import.xlf:help.title" />
+        </summary>
+        <div class="mt-3">
+            <p class="text-muted"><f:translate key="LLL:EXT:redirect_generator/Resources/Private/Language/Modules/import.xlf:help.description" /></p>
+
+            <h5><f:translate key="LLL:EXT:redirect_generator/Resources/Private/Language/Modules/import.xlf:help.example.basic.title" /></h5>
+            <pre class="bg-light border rounded p-3 font-monospace user-select-all">/old-path;{firstSiteDomain}/new-path
+/another-old-path;/new-page</pre>
+
+            <h5 class="mt-3"><f:translate key="LLL:EXT:redirect_generator/Resources/Private/Language/Modules/import.xlf:help.example.statuscode.title" /></h5>
+            <pre class="bg-light border rounded p-3 font-monospace user-select-all">/old-path;{firstSiteDomain}/new-path;301
+/temp-path;{firstSiteDomain}/target;302</pre>
+
+            <h5 class="mt-3"><f:translate key="LLL:EXT:redirect_generator/Resources/Private/Language/Modules/import.xlf:help.example.external.title" /></h5>
+            <pre class="bg-light border rounded p-3 font-monospace user-select-all">/old-path;https://other-domain.com/page;301;1</pre>
+        </div>
+    </details>
 
 </f:section>
 

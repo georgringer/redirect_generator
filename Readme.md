@@ -6,19 +6,13 @@ Target URLs are automatically resolved to `t3://page?uid=X` links via TYPO3's ro
 
 ## Requirements
 
-- TYPO3 13.4 LTS or 14.x
+- TYPO3 13.4 LTS or 14 LTS
 - EXT:redirects
 
 ## Installation
 
 ```bash
 composer require georgringer/redirect-generator
-```
-
-For the backend UI modules (import/export forms), also install:
-
-```bash
-composer require georgringer/redirect-generator-ui
 ```
 
 ## Configuration
@@ -90,12 +84,45 @@ Options:
 
 > This command is schedulable.
 
-## Backend Modules
+## Backend UI — `redirect_generator_ui`
 
-Install `redirect_generator_ui` to get two modules under *Link Management*:
+The companion extension **`georgringer/redirect-generator-ui`** adds a full backend module under *Link Management* with import and export forms — no CLI access required.
 
-- **Import Redirects** — paste CSV directly into a textarea, choose delimiter and status code, optional dry run
-- **Export Redirects** — filter by redirect type or creation type, resolve target URLs, copy CSV from textarea
+```bash
+composer require georgringer/redirect-generator-ui
+```
+
+<table>
+  <tr>
+    <td align="center" width="50%">
+      <img src="Resources/Public/Screenshots/ui/module-link-management.png" alt="Link Management module" /><br/>
+      <sub>Module in the backend navigation</sub>
+    </td>
+    <td align="center" width="50%">
+      <img src="Resources/Public/Screenshots/ui/export.png" alt="Export module" /><br/>
+      <sub>Export — filter by type, resolve target URLs</sub>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" width="50%">
+      <img src="Resources/Public/Screenshots/ui/import-success.png" alt="Import success" /><br/>
+      <sub>Import — live result with per-row feedback</sub>
+    </td>
+    <td align="center" width="50%">
+      <img src="Resources/Public/Screenshots/ui/import-error.png" alt="Import errors" /><br/>
+      <sub>Import — conflicts and errors shown inline</sub>
+    </td>
+  </tr>
+</table>
+
+**Features:**
+
+- Paste CSV directly into a textarea — no file upload or server access needed
+- Choose delimiter (`;` `,` `tab`) and default status code per import run
+- Dry-run mode to preview results before writing
+- Per-row result feedback: imported, skipped, conflicting duplicates, errors
+- Export with optional filter by redirect type or creation type
+- Resolve stored `t3://page` links to readable URLs on export
 
 ## PSR-14 Events
 

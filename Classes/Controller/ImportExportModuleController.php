@@ -9,6 +9,7 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Backend\Attribute\AsController;
 use TYPO3\CMS\Backend\Routing\UriBuilder;
+use TYPO3\CMS\Core\Site\SiteFinder;
 use TYPO3\CMS\Backend\Template\Components\ButtonBar;
 use TYPO3\CMS\Backend\Template\ModuleTemplate;
 use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
@@ -26,12 +27,14 @@ readonly class ImportExportModuleController
         private RedirectRepository $redirectRepository,
         private UriBuilder $uriBuilder,
         private IconFactory $iconFactory,
+        private SiteFinder $siteFinder,
     ) {}
 
     public function handleImportRequest(ServerRequestInterface $request): ResponseInterface
     {
         $view = $this->moduleTemplateFactory->create($request);
         $this->addNavigationButtons($view, 'import');
+        $view->assign('firstSiteDomain', $this->resolveFirstSiteDomain());
         return $view->renderResponse('ImportExport/Import');
     }
 
@@ -45,6 +48,17 @@ readonly class ImportExportModuleController
             'availableCreationTypes' => $this->buildCreationTypeOptions(),
         ]);
         return $view->renderResponse('ImportExport/Export');
+    }
+
+    private function resolveFirstSiteDomain(): string
+    {
+        $sites = $this->siteFinder->getAllSites();
+        $site = reset($sites);
+        if ($site === false) {
+            return 'https://example.com';
+        }
+        $base = $site->getBase();
+        return $base->getScheme() . '://' . $base->getHost();
     }
 
     private function addNavigationButtons(ModuleTemplate $view, string $active): void
