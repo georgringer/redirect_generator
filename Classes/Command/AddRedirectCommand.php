@@ -73,7 +73,7 @@ class AddRedirectCommand extends Command
 
             $language = $result->getSiteRouteResult()->getLanguage();
             $io->table([], [
-                ['Status Code', $configuration->getTargetStatusCode()],
+                ['Status Code', $configuration->targetStatusCode],
                 ['Source', $source],
                 ['Target', $target],
                 ['Target Page', $result->getPageArguments()->getPageId()],
