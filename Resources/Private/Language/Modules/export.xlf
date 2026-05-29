@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file source-language="en" datatype="plaintext" original="EXT:redirect_generator/Resources/Private/Language/Modules/export.xlf" product-name="redirect_generator">
+    <header/>
+    <body>
+      <trans-unit id="title">
+        <source>Export Redirects</source>
+      </trans-unit>
+      <trans-unit id="short_description">
+        <source>Export redirects as CSV</source>
+      </trans-unit>
+      <trans-unit id="description">
+        <source>Export existing redirects to CSV for review or re-import.</source>
+      </trans-unit>
+      <trans-unit id="heading">
+        <source>Export Redirects</source>
+      </trans-unit>
+      <trans-unit id="form.redirectType">
+        <source>Filter by redirect type</source>
+      </trans-unit>
+      <trans-unit id="form.redirectType.all">
+        <source>All</source>
+      </trans-unit>
+      <trans-unit id="form.creationType">
+        <source>Filter by creation type</source>
+      </trans-unit>
+      <trans-unit id="form.creationType.all">
+        <source>All</source>
+      </trans-unit>
+      <trans-unit id="form.resolveTarget">
+        <source>Resolve target URLs</source>
+      </trans-unit>
+      <trans-unit id="form.resolveTarget.description">
+        <source>Convert stored t3://page links to readable URLs.</source>
+      </trans-unit>
+      <trans-unit id="form.submit">
+        <source>Export</source>
+      </trans-unit>
+      <trans-unit id="result.empty">
+        <source>No redirects found for the selected filter.</source>
+      </trans-unit>
+      <trans-unit id="result.count">
+        <source>redirects exported</source>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

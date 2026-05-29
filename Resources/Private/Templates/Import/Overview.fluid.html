@@ -1,0 +1,75 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    data-namespace-typo3-fluid="true"
+>
+
+<f:layout name="Module" />
+
+<f:section name="Content">
+
+    <h1><f:translate id="heading" domain="redirect_generator.modules.import" /></h1>
+
+    <div class="alert alert-info" role="alert">
+        <h4 class="alert-title">redirect_generator_ui</h4>
+        <p class="alert-message">
+            The full import module is available in the
+            <strong>redirect_generator_ui</strong> extension.
+            Install it to enable bulk-importing redirects from CSV directly in the backend.
+        </p>
+    </div>
+
+    <fieldset disabled="disabled" style="opacity:.5">
+
+        <div class="mb-3">
+            <label class="form-label">
+                <f:translate id="form.csvContent" domain="redirect_generator.modules.import" />
+            </label>
+            <textarea class="form-control font-monospace" rows="12"
+                placeholder="/old-path;https://example.com/new-path"></textarea>
+            <div class="form-text">
+                <f:translate id="form.csvContent.description" domain="redirect_generator.modules.import" />
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-4">
+                <label class="form-label">
+                    <f:translate id="form.delimiter" domain="redirect_generator.modules.import" />
+                </label>
+                <select class="form-select">
+                    <option><f:translate id="form.delimiter.semicolon" domain="redirect_generator.modules.import" /></option>
+                    <option><f:translate id="form.delimiter.comma" domain="redirect_generator.modules.import" /></option>
+                    <option><f:translate id="form.delimiter.tab" domain="redirect_generator.modules.import" /></option>
+                </select>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label">
+                    <f:translate id="form.statusCode" domain="redirect_generator.modules.import" />
+                </label>
+                <select class="form-select">
+                    <option>307 – Temporary Redirect</option>
+                    <option>301 – Moved Permanently</option>
+                    <option>302 – Found</option>
+                    <option>303 – See Other</option>
+                </select>
+            </div>
+
+            <div class="col-md-4 d-flex align-items-end">
+                <div class="form-check mb-2">
+                    <input type="checkbox" class="form-check-input" />
+                    <label class="form-check-label">
+                        <f:translate id="form.dryRun" domain="redirect_generator.modules.import" />
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <button type="button" class="btn btn-primary">
+            <f:translate id="form.submit" domain="redirect_generator.modules.import" />
+        </button>
+
+    </fieldset>
+
+</f:section>
+
+</html>

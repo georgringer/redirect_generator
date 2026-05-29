@@ -1,0 +1,67 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    data-namespace-typo3-fluid="true"
+>
+
+<f:layout name="Module" />
+
+<f:section name="Content">
+
+    <h1><f:translate id="heading" domain="redirect_generator.modules.export" /></h1>
+
+    <div class="alert alert-info" role="alert">
+        <h4 class="alert-title">redirect_generator_ui</h4>
+        <p class="alert-message">
+            The full export module is available in the
+            <strong>redirect_generator_ui</strong> extension.
+            Install it to export redirects with target URL resolution directly in the backend.
+        </p>
+    </div>
+
+    <fieldset disabled="disabled" style="opacity:.5">
+
+        <div class="row mb-3">
+            <div class="col-md-3">
+                <label class="form-label">
+                    <f:translate id="form.redirectType" domain="redirect_generator.modules.export" />
+                </label>
+                <select class="form-select">
+                    <option><f:translate id="form.redirectType.all" domain="redirect_generator.modules.export" /></option>
+                    <f:for each="{availableRedirectTypes}" as="type">
+                        <option>{type}</option>
+                    </f:for>
+                </select>
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label">
+                    <f:translate id="form.creationType" domain="redirect_generator.modules.export" />
+                </label>
+                <select class="form-select">
+                    <option><f:translate id="form.creationType.all" domain="redirect_generator.modules.export" /></option>
+                    <f:for each="{availableCreationTypes}" as="option">
+                        <option>{option.label}</option>
+                    </f:for>
+                </select>
+            </div>
+
+            <div class="col-md-3 d-flex align-items-end">
+                <div class="form-check mb-2">
+                    <input type="checkbox" class="form-check-input" />
+                    <label class="form-check-label">
+                        <f:translate id="form.resolveTarget" domain="redirect_generator.modules.export" />
+                    </label>
+                </div>
+            </div>
+
+            <div class="col-md-3 d-flex align-items-end">
+                <button type="button" class="btn btn-primary mb-2">
+                    <f:translate id="form.submit" domain="redirect_generator.modules.export" />
+                </button>
+            </div>
+        </div>
+
+    </fieldset>
+
+</f:section>
+
+</html>

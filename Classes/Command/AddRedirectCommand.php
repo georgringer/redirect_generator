@@ -6,20 +6,29 @@ namespace GeorgRinger\RedirectGenerator\Command;
 use GeorgRinger\RedirectGenerator\Domain\Model\Dto\Configuration;
 use GeorgRinger\RedirectGenerator\Repository\RedirectRepository;
 use GeorgRinger\RedirectGenerator\Service\UrlMatcher;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Core\Attribute\AsNonSchedulableCommand;
 
+#[AsCommand('redirect:add', 'Add redirect to the redirects table')]
+#[AsNonSchedulableCommand]
 class AddRedirectCommand extends Command
 {
+    public function __construct(
+        private readonly UrlMatcher $urlMatcher,
+        private readonly RedirectRepository $redirectRepository,
+    ) {
+        parent::__construct();
+    }
+
     public function configure(): void
     {
-        $this->setDescription('Add redirect to the redirects table')
-            ->addArgument('source', InputArgument::REQUIRED, 'Source')
+        $this->addArgument('source', InputArgument::REQUIRED, 'Source')
             ->addArgument('target', InputArgument::REQUIRED, 'Target')
             ->addOption(
                 'dry-run',
@@ -47,21 +56,18 @@ class AddRedirectCommand extends Command
             $io->warning('Dry run enabled!');
         }
 
-
         $source = $input->getArgument('source');
         $target = $input->getArgument('target');
 
-        $matcher = GeneralUtility::makeInstance(UrlMatcher::class);
         $configuration = $this->getConfigurationFromInput($input);
 
         try {
-            $result = $matcher->getUrlData($target);
+            $result = $this->urlMatcher->getUrlData($target);
 
             if ($dryRun) {
                 $io->success('The following redirect would have been added:');
             } else {
-                $redirectRepository = GeneralUtility::makeInstance(RedirectRepository::class);
-                $redirectRepository->addRedirect($source, $result->getLinkString(), $configuration, $dryRun);
+                $this->redirectRepository->addRedirect($source, $result->getLinkString(), $configuration, $dryRun);
                 $io->success('Redirect has been added!');
             }
 
@@ -84,14 +90,10 @@ class AddRedirectCommand extends Command
 
     protected function getConfigurationFromInput(InputInterface $input): Configuration
     {
-        $configuration = new Configuration();
-
-
-        if ($input->hasOption('status-code') && !$configuration->statusCodeIsAllowed((int)$input->getOption('status-code'))) {
+        $statusCode = (int)$input->getOption('status-code');
+        if (!Configuration::statusCodeIsAllowed($statusCode)) {
             throw new \RuntimeException('Status code wrong');
         }
-        $configuration->setTargetStatusCode((int)$input->getOption('status-code'));
-
-        return $configuration;
+        return new Configuration(targetStatusCode: $statusCode);
     }
 }
