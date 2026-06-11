@@ -2,7 +2,8 @@
 
 CLI tools and backend modules to bulk-import and export TYPO3 redirects from/to CSV.
 
-Target URLs are automatically resolved to `t3://page?uid=X` links via TYPO3's routing — no manual page ID lookup needed.
+Target URLs are automatically resolved to `t3://page?uid=X` links via TYPO3's routing - no manual page ID lookup needed,
+including error check.
 
 ## Requirements
 
