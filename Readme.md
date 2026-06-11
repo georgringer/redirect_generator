@@ -89,6 +89,8 @@ Options:
 
 The companion extension **`georgringer/redirect-generator-ui`** adds a full backend module under *Link Management* with import and export forms — no CLI access required.
 
+More information: [ringer.it/extensions/redirect-generator-ui](https://ringer.it/extensions/redirect-generator-ui/)
+
 ```bash
 composer require georgringer/redirect-generator-ui
 ```
@@ -166,9 +168,3 @@ class MyListener
 
 Register listeners in your extension's `Services.yaml`:
 
-```yaml
-MyVendor\MyExt\EventListener\MyListener:
-  tags:
-    - name: event.listener
-      event: GeorgRinger\RedirectGenerator\Event\BeforeRedirectAddedEvent
-```
