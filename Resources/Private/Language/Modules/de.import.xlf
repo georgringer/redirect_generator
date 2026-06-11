@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file source-language="en" target-language="de" datatype="plaintext" original="EXT:redirect_generator/Resources/Private/Language/Modules/import.xlf" product-name="redirect_generator">
+    <header/>
+    <body>
+      <trans-unit id="title">
+        <source>Import Redirects</source>
+        <target>Weiterleitungen importieren</target>
+      </trans-unit>
+      <trans-unit id="short_description">
+        <source>Import redirects from CSV</source>
+        <target>Weiterleitungen aus CSV importieren</target>
+      </trans-unit>
+      <trans-unit id="description">
+        <source>Paste CSV content to bulk-import redirects into the redirect table.</source>
+        <target>CSV-Inhalt einfügen, um Weiterleitungen in die Weiterleitungstabelle zu importieren.</target>
+      </trans-unit>
+      <trans-unit id="heading">
+        <source>Import Redirects from CSV</source>
+        <target>Weiterleitungen aus CSV importieren</target>
+      </trans-unit>
+      <trans-unit id="form.csvContent">
+        <source>CSV Content</source>
+        <target>CSV-Inhalt</target>
+      </trans-unit>
+      <trans-unit id="form.csvContent.description">
+        <source>Paste CSV rows here. Column 1: source path, column 2: target URL. No header row needed.</source>
+        <target>CSV-Zeilen hier einfügen. Spalte 1: Quellpfad, Spalte 2: Ziel-URL. Keine Kopfzeile erforderlich.</target>
+      </trans-unit>
+      <trans-unit id="form.delimiter">
+        <source>Delimiter</source>
+        <target>Trennzeichen</target>
+      </trans-unit>
+      <trans-unit id="form.delimiter.semicolon">
+        <source>Semicolon (;)</source>
+        <target>Semikolon (;)</target>
+      </trans-unit>
+      <trans-unit id="form.delimiter.comma">
+        <source>Comma (,)</source>
+        <target>Komma (,)</target>
+      </trans-unit>
+      <trans-unit id="form.delimiter.tab">
+        <source>Tab</source>
+        <target>Tabulator</target>
+      </trans-unit>
+      <trans-unit id="form.statusCode">
+        <source>Default Redirect Type</source>
+        <target>Standard-Weiterleitungstyp</target>
+      </trans-unit>
+      <trans-unit id="form.dryRun">
+        <source>Dry Run</source>
+        <target>Testlauf</target>
+      </trans-unit>
+      <trans-unit id="form.submit">
+        <source>Import</source>
+        <target>Importieren</target>
+      </trans-unit>
+      <trans-unit id="result.dryRun">
+        <source>Dry run – no redirects were written to the database.</source>
+        <target>Testlauf – keine Weiterleitungen wurden in die Datenbank geschrieben.</target>
+      </trans-unit>
+      <trans-unit id="result.ok">
+        <source>Successfully imported redirects</source>
+        <target>Weiterleitungen erfolgreich importiert</target>
+      </trans-unit>
+      <trans-unit id="result.error">
+        <source>Errors</source>
+        <target>Fehler</target>
+      </trans-unit>
+      <trans-unit id="result.skipped">
+        <source>Skipped (source equals target)</source>
+        <target>Übersprungen (Quelle entspricht Ziel)</target>
+      </trans-unit>
+      <trans-unit id="result.duplicates.conflicting">
+        <source>Conflicting duplicates (same source, different target)</source>
+        <target>Konflikte (gleiche Quelle, unterschiedliches Ziel)</target>
+      </trans-unit>
+      <trans-unit id="result.duplicates.non_conflicting">
+        <source>Already exists (identical source and target)</source>
+        <target>Bereits vorhanden (identische Quelle und identisches Ziel)</target>
+      </trans-unit>
+      <trans-unit id="help.title">
+        <source>Examples</source>
+        <target>Beispiele</target>
+      </trans-unit>
+      <trans-unit id="help.description">
+        <source>Each line contains one redirect. Columns are separated by the chosen delimiter. The fourth column (1) marks a target as external and skips URL resolving.</source>
+        <target>Jede Zeile enthält eine Weiterleitung. Spalten werden durch das gewählte Trennzeichen getrennt. Die vierte Spalte (1) markiert ein Ziel als extern und überspringt die URL-Auflösung.</target>
+      </trans-unit>
+      <trans-unit id="help.example.basic.title">
+        <source>Basic (source; target)</source>
+        <target>Einfach (Quelle; Ziel)</target>
+      </trans-unit>
+      <trans-unit id="help.example.statuscode.title">
+        <source>With status code (source; target; status code)</source>
+        <target>Mit Statuscode (Quelle; Ziel; Statuscode)</target>
+      </trans-unit>
+      <trans-unit id="help.example.external.title">
+        <source>External target (source; target; status code; external)</source>
+        <target>Externes Ziel (Quelle; Ziel; Statuscode; extern)</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

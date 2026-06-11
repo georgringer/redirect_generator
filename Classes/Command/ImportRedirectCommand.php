@@ -7,11 +7,11 @@ use GeorgRinger\RedirectGenerator\Domain\Model\Dto\Configuration;
 use GeorgRinger\RedirectGenerator\Exception\ConflictingDuplicateException;
 use GeorgRinger\RedirectGenerator\Exception\NonConflictingDuplicateException;
 use GeorgRinger\RedirectGenerator\Repository\RedirectRepository;
-use GeorgRinger\RedirectGenerator\Service\CsvReader;
 use GeorgRinger\RedirectGenerator\Service\UrlMatcher;
 use GeorgRinger\RedirectGenerator\Utility\NotificationHandler;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -19,36 +19,29 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
+use TYPO3\CMS\Core\Utility\CsvUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Core\Utility\HttpUtility;
 
+#[AsCommand('redirect:import', 'Import redirects from a CSV file')]
 class ImportRedirectCommand extends Command implements LoggerAwareInterface
 {
     use LoggerAwareTrait;
 
-    protected RedirectRepository $redirectRepository;
-    protected UrlMatcher $urlMatcher;
-    protected NotificationHandler $notificationHandler;
-    protected ExtensionConfiguration $extensionConfiguration;
     protected array $externalDomains = [];
 
     public function __construct(
-        string $name = '',
-        ?NotificationHandler $notificationHandler = null,
-        ?ExtensionConfiguration $extensionConfiguration = null
+        private readonly RedirectRepository $redirectRepository,
+        private readonly UrlMatcher $urlMatcher,
+        private readonly NotificationHandler $notificationHandler,
+        private readonly ExtensionConfiguration $extensionConfiguration,
     ) {
-        $this->redirectRepository = GeneralUtility::makeInstance(RedirectRepository::class);
-        $this->urlMatcher = GeneralUtility::makeInstance(UrlMatcher::class);
-        $this->notificationHandler = $notificationHandler;
-        $this->extensionConfiguration = $extensionConfiguration;
-
-        parent::__construct('redirect:import');
+        parent::__construct();
     }
 
     public function configure(): void
     {
-        $this->setDescription('Import redirect')
-            ->addArgument('file', InputArgument::REQUIRED, 'File to be imported')
+        $this->addArgument('file', InputArgument::REQUIRED, 'File to be imported')
             ->addOption(
                 'dry-run',
                 null,
@@ -64,6 +57,12 @@ class ImportRedirectCommand extends Command implements LoggerAwareInterface
                 null,
                 InputOption::VALUE_NONE,
                 'Delete the import file after import'
+            )->addOption(
+                'delimiter',
+                null,
+                InputOption::VALUE_OPTIONAL,
+                'CSV delimiter character: ";" (default), "," or "tab"',
+                ';'
             )
             ->setHelp('Import a CSV file as redirects');
     }
@@ -75,6 +74,7 @@ class ImportRedirectCommand extends Command implements LoggerAwareInterface
 
         $filePath = $input->getArgument('file');
         $dryRun = ($input->hasOption('dry-run') && $input->getOption('dry-run') != false);
+        $delimiter = $this->resolveDelimiter((string)$input->getOption('delimiter'));
         if ($input->hasOption('external-domains')) {
             $this->setExternalDomains((string)$input->getOption('external-domains'));
         }
@@ -82,17 +82,11 @@ class ImportRedirectCommand extends Command implements LoggerAwareInterface
             $io->warning('Dry run enabled!');
         }
 
-        /** @var CsvReader */
-        $csvReader = GeneralUtility::makeInstance(CsvReader::class);
-        $csvReader->heading = true;
-        $csvReader->delimiter = ';';
-        $csvReader->enclosure = '';
-
         try {
             $this->validateFilePath($filePath);
-            $csvReader->parse($filePath);
-
-            $data = $csvReader->data;
+            $rows = CsvUtility::csvToArray((string)file_get_contents($filePath), $delimiter);
+            $headers = array_shift($rows);
+            $data = array_map(static fn(array $row) => array_combine($headers, $row), $rows);
             if (empty($data)) {
                 $allowEmptyFile = $this->extensionConfiguration->get('redirect_generator', 'allow_empty_import_file');
                 if ($allowEmptyFile) {
@@ -185,7 +179,7 @@ class ImportRedirectCommand extends Command implements LoggerAwareInterface
                 }
 
                 $configuration = $this->getConfigurationFromItem($item);
-                if ($item['external'] ?? '' === '1' || $this->isExternalDomain($item['target'] ?? '')) {
+                if (($item['external'] ?? '') === '1' || $this->isExternalDomain($item['target'] ?? '')) {
                     $targetUrl = $item['target'];
                 } else {
                     $result = $this->urlMatcher->getUrlData($item['target']);
@@ -225,7 +219,7 @@ class ImportRedirectCommand extends Command implements LoggerAwareInterface
             return false;
         }
         foreach ($this->externalDomains as $externalDomain) {
-            if (strpos($target, $externalDomain) === 0) {
+            if (str_starts_with($target, $externalDomain)) {
                 return true;
             }
         }
@@ -234,20 +228,13 @@ class ImportRedirectCommand extends Command implements LoggerAwareInterface
 
     protected function getConfigurationFromItem(array $item): Configuration
     {
-        /** @var Configuration */
-        $configuration = GeneralUtility::makeInstance(Configuration::class);
-        if (isset($item['status_code'])) {
-            $configuration->setTargetStatusCode((int)$item['status_code']);
-        }
-
-        return $configuration;
+        $statusCode = isset($item['status_code']) && Configuration::statusCodeIsAllowed((int)$item['status_code'])
+            ? (int)$item['status_code']
+            : 307;
+        return new Configuration(targetStatusCode: $statusCode);
     }
 
-    /**
-     * @param string $filePath
-     * @return bool
-     */
-    protected function validateFilePath(string $filePath): bool
+    protected function validateFilePath(string $filePath): void
     {
         if (!is_file($filePath)) {
             throw new \UnexpectedValueException(sprintf('File "%s" does not exist', $filePath), 1568544111);
@@ -255,14 +242,11 @@ class ImportRedirectCommand extends Command implements LoggerAwareInterface
         if (!\str_ends_with(strtolower($filePath), '.csv')) {
             throw new \UnexpectedValueException(sprintf('File "%s" is no CSV file', $filePath), 1568544112);
         }
-
-        return true;
     }
 
-    protected function validateCsvHeaders(array $item, int $position): bool
+    protected function validateCsvHeaders(array $item, int $position): void
     {
-        $requiredFields = ['source', 'target'];
-        foreach ($requiredFields as $field) {
+        foreach (['source', 'target'] as $field) {
             if (!array_key_exists($field, $item)) {
                 throw new \UnexpectedValueException(sprintf('Key "%s" does not exist in CSV in line %s', $field, $position), 156854413);
             }
@@ -270,16 +254,22 @@ class ImportRedirectCommand extends Command implements LoggerAwareInterface
                 throw new \UnexpectedValueException(sprintf('Key "%s" is empty in CSV in line %s', $field, $position), 156854414);
             }
         }
-
-        return true;
     }
 
-    protected function setExternalDomains(string $domains)
+    protected function resolveDelimiter(string $value): string
     {
-        $list = GeneralUtility::trimExplode(',', $domains, true);
-        foreach ($list as $item) {
-            $this->externalDomains[] = 'http://' . $item;
-            $this->externalDomains[] = 'https://' . $item;
+        return match ($value) {
+            'tab'   => "\t",
+            ','     => ',',
+            default => ';',
+        };
+    }
+
+    protected function setExternalDomains(string $domains): void
+    {
+        foreach (GeneralUtility::trimExplode(',', $domains, true) as $domain) {
+            $this->externalDomains[] = 'http://' . $domain;
+            $this->externalDomains[] = 'https://' . $domain;
         }
     }
 }

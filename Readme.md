@@ -1,88 +1,170 @@
 # TYPO3 Extension `redirect_generator`
 
-This extensions creates proper redirect entries from a CSV file.
+CLI tools and backend modules to bulk-import and export TYPO3 redirects from/to CSV.
 
-Each target entry will be matched by the routing configuration. If the target is `http://demo.vm/company/contact`, the redirect will be created to the related page id!
+Target URLs are automatically resolved to `t3://page?uid=X` links via TYPO3's routing - no manual page ID lookup needed,
+including error check.
 
-![Add Redirect](Resources/Public/Screenshots/redirect-add.png)
+## Requirements
+
+- TYPO3 13.4 LTS or 14 LTS
+- EXT:redirects
 
 ## Installation
 
-### Requirements
-
-* TYPO3
-  * TYPO3 12 LTS: dev-master + 2.0.0
-  * TYPO3 10/11 LTS: 1.0.0
-* EXT:redirects
-
-### Setup
-
-Install as any other extension:
-
-* *Composer*: `composer require georgringer/redirect-generator`
+```bash
+composer require georgringer/redirect-generator
+```
 
 ## Configuration
 
-Set the following extension configuration options to enable email notifications:
+Extension configuration options (Admin → Settings → Extension Configuration):
 
-* *notification_email*: A comma separated list of e-mail addresses to send notification emails of the export and import commands
-* *notification_level*: Set the level of notification messages you want to receive:
-  * 0 (error): Only receive error messages
-  * 1 (warning): Receive error and warning messages
-  * 2 (info): Receive all messages
-* *allow_empty_import_file*: If true an empty CSV file will silently skip the import, otherwise an error is thrown
+| Option | Description |
+|---|---|
+| `notification_email` | Comma-separated list of addresses for import/export notifications |
+| `notification_level` | `0` = errors only · `1` = + warnings · `2` = + info |
+| `allow_empty_import_file` | If true, an empty CSV file silently skips the import instead of throwing an error |
 
-## Usage
+## CLI Commands
 
-### Add single redirect
-
-Use the following CLI command:
+### Add a single redirect
 
 ```bash
-./bin/typo3 redirect:add /any-url https://domain.tld/your-final-url
+./bin/typo3 redirect:add <source> <target> [--status-code=307] [--dry-run]
 ```
 
-The following options are available:
-
-* `--status-code`: Define the status code, allowed are *301*,*302*, *303* and *307*.
-* `--dry-run`: If set, the redirect won't be added
-
-### Import CSV
-
-Use the following CLI command:
+The target must be a full URL of a page on this TYPO3 instance. It is resolved to the corresponding page ID automatically.
 
 ```bash
-./bin/typo3 redirect:import <path-to-file.csv>
+./bin/typo3 redirect:add /old-path https://example.com/new-page --status-code=301
 ```
 
-````csv
-source;target;status_code
-/fo/bar;http://t3-master.vm/examples/extensions/news;301
-/fo/bar2;http://t3-master.vm/examples/extensions/news;307
-/fo/bar3;http://t3-master.vm/exakqwkqkwmples/extensions/news;301
-````
-
-A sample CSV file can be found at `EXT:redirect_generator/Resources/Private/Examples/ImportBasic.csv`
-
-In addition an additional column `external` can be added to the CSV. It can be 0 (false) or 1 (true). If 1, the target is interpreted as an external URL and not mapped against a TYPO3 page.
-
-The following options are available:
-
-* `--dry-run`: If set, the redirect won't be added
-* `--external-domains`: Provide a comma separated list of domains which are external
-* `--delete-file`: If set the CSV file is deleted after (a successful or unsuccessful) import
-
-> This command can be run in the scheduler (select *Execute console commands* as class)
-
-### Export Redirects
-
-Export all redirects as CSV.
-The optional option `--transform-target-url` transform the target url like `t3://page?uid=1106` into the final URL.
-
-Use the following CLI command:
+### Import redirects from CSV
 
 ```bash
-./bin/typo3 redirect:export export.csv --transform-target-url
+./bin/typo3 redirect:import <file.csv> [--dry-run] [--external-domains=domain1,domain2] [--delete-file]
 ```
 
-> This command can be run in the scheduler (select *Execute console commands* as class)
+**CSV format** — semicolon-delimited, first row must be the header:
+
+```csv
+source;target;status_code;external
+/old-page;https://example.com/new-page;301;0
+/old-section/article;https://example.com/news/article;307;0
+/external-link;https://other-domain.com/page;301;1
+```
+
+| Column | Required | Description |
+|---|---|---|
+| `source` | yes | Source path (e.g. `/old-page`) |
+| `target` | yes | Full target URL. Internal pages are resolved to `t3://page?uid=X`. Set `external=1` to skip resolution. |
+| `status_code` | no | HTTP status code. Falls back to `307` if omitted or invalid. |
+| `external` | no | `1` = store target URL as-is without page lookup |
+
+Set a target value of `x` to skip a row.
+
+Options:
+
+| Option | Description |
+|---|---|
+| `--dry-run` | Simulate import without writing to the database |
+| `--delimiter` | CSV delimiter: `;` (default), `,` or `tab` |
+| `--external-domains` | Comma-separated list of domains always treated as external |
+| `--delete-file` | Delete the CSV file after import |
+
+> This command is schedulable (TYPO3 Scheduler → *Execute console commands*).
+
+### Export redirects to CSV
+
+```bash
+./bin/typo3 redirect:export <output.csv> [--transform-target-url]
+```
+
+`--transform-target-url` resolves stored `t3://page?uid=X` links back to readable URLs.
+
+> This command is schedulable.
+
+## Backend UI — `redirect_generator_ui`
+
+The companion extension **`georgringer/redirect-generator-ui`** adds a full backend module under *Link Management* with import and export forms — no CLI access required.
+
+More information: [ringer.it/extensions/redirect-generator-ui](https://ringer.it/extensions/redirect-generator-ui/)
+
+```bash
+composer require georgringer/redirect-generator-ui
+```
+
+<table>
+  <tr>
+    <td align="center" width="50%">
+      <img src="Resources/Public/Screenshots/ui/module-link-management.png" alt="Link Management module" /><br/>
+      <sub>Module in the backend navigation</sub>
+    </td>
+    <td align="center" width="50%">
+      <img src="Resources/Public/Screenshots/ui/export.png" alt="Export module" /><br/>
+      <sub>Export — filter by type, resolve target URLs</sub>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" width="50%">
+      <img src="Resources/Public/Screenshots/ui/import-success.png" alt="Import success" /><br/>
+      <sub>Import — live result with per-row feedback</sub>
+    </td>
+    <td align="center" width="50%">
+      <img src="Resources/Public/Screenshots/ui/import-error.png" alt="Import errors" /><br/>
+      <sub>Import — conflicts and errors shown inline</sub>
+    </td>
+  </tr>
+</table>
+
+**Features:**
+
+- Paste CSV directly into a textarea — no file upload or server access needed
+- Choose delimiter (`;` `,` `tab`) and default status code per import run
+- Dry-run mode to preview results before writing
+- Per-row result feedback: imported, skipped, conflicting duplicates, errors
+- Export with optional filter by redirect type or creation type
+- Resolve stored `t3://page` links to readable URLs on export
+
+## PSR-14 Events
+
+Two events are dispatched from `RedirectRepository::addRedirect()` (not fired during dry runs):
+
+### `BeforeRedirectAddedEvent`
+
+Fired just before the database insert. Listeners may modify source URL, target URL, or the `Configuration` object.
+
+```php
+use GeorgRinger\RedirectGenerator\Event\BeforeRedirectAddedEvent;
+
+class MyListener
+{
+    public function __invoke(BeforeRedirectAddedEvent $event): void
+    {
+        // Force all new redirects to 301
+        $event->setConfiguration(
+            new Configuration(targetStatusCode: 301)
+        );
+    }
+}
+```
+
+### `AfterRedirectAddedEvent`
+
+Fired after the insert. Provides `sourceUrl`, `targetUrl`, `configuration`, and the new `uid`.
+
+```php
+use GeorgRinger\RedirectGenerator\Event\AfterRedirectAddedEvent;
+
+class MyListener
+{
+    public function __invoke(AfterRedirectAddedEvent $event): void
+    {
+        // e.g. flush a custom cache, send a webhook, ...
+    }
+}
+```
+
+Register listeners in your extension's `Services.yaml`:
+

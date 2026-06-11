@@ -1,0 +1,58 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  unit-tests:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2', '8.3', '8.4']
+        typo3: ['^13.4.20', '^14.3']
+        composerInstall: ['composerInstallLowest', 'composerInstallHighest']
+        exclude:
+          - typo3: '^13.4.20'
+            php: '8.4'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up PHP ${{ matrix.php }}
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: intl, mbstring
+          coverage: none
+
+      - name: Get Composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: Cache Composer packages
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ matrix.php }}-${{ matrix.typo3 }}-${{ matrix.composerInstall }}-${{ hashFiles('composer.json') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-${{ matrix.php }}-${{ matrix.typo3 }}-${{ matrix.composerInstall }}-
+            ${{ runner.os }}-composer-${{ matrix.php }}-${{ matrix.typo3 }}-
+            ${{ runner.os }}-composer-${{ matrix.php }}-
+
+      - name: Pin TYPO3 version
+        run: composer require --no-update "typo3/cms-core:${{ matrix.typo3 }}" "typo3/cms-redirects:${{ matrix.typo3 }}"
+
+      - name: Composer install (highest)
+        if: matrix.composerInstall == 'composerInstallHighest'
+        run: composer update --no-progress --no-interaction --ansi
+
+      - name: Composer install (lowest)
+        if: matrix.composerInstall == 'composerInstallLowest'
+        run: composer update --prefer-lowest --no-progress --no-interaction --ansi
+
+      - name: Lint PHP
+        run: find Classes Tests -name '*.php' | xargs php -l -n | (! grep -v "^No syntax errors detected" )
+
+      - name: Run unit tests
+        run: .Build/bin/phpunit -c Build/phpunit.xml.dist

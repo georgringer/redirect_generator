@@ -1,0 +1,67 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers"
+    data-namespace-typo3-fluid="true"
+>
+
+<f:layout name="Module" />
+
+<f:section name="Content">
+
+    <h1><f:translate key="LLL:EXT:redirect_generator/Resources/Private/Language/Modules/export.xlf:heading" /></h1>
+
+    <div class="alert alert-info" role="alert">
+        <h4 class="alert-title">Full UI support available</h4>
+        <p class="alert-message">
+            The full export module is available in the
+            <strong><a href="https://ringer.it/extensions/redirect-generator-ui/" target="_blank" rel="noopener">redirect_generator_ui</a></strong> extension.
+            Install it to export redirects with target URL resolution directly in the backend.
+        </p>
+    </div>
+
+    <fieldset disabled="disabled" style="opacity:.5">
+
+        <div class="row mb-3">
+            <div class="col-md-3">
+                <label class="form-label">
+                    <f:translate key="LLL:EXT:redirect_generator/Resources/Private/Language/Modules/export.xlf:form.redirectType" />
+                </label>
+                <select class="form-select">
+                    <option><f:translate key="LLL:EXT:redirect_generator/Resources/Private/Language/Modules/export.xlf:form.redirectType.all" /></option>
+                    <f:for each="{availableRedirectTypes}" as="type">
+                        <option>{type}</option>
+                    </f:for>
+                </select>
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label">
+                    <f:translate key="LLL:EXT:redirect_generator/Resources/Private/Language/Modules/export.xlf:form.creationType" />
+                </label>
+                <select class="form-select">
+                    <option><f:translate key="LLL:EXT:redirect_generator/Resources/Private/Language/Modules/export.xlf:form.creationType.all" /></option>
+                    <f:for each="{availableCreationTypes}" as="option">
+                        <option>{option.label}</option>
+                    </f:for>
+                </select>
+            </div>
+
+            <div class="col-md-3 d-flex align-items-end">
+                <div class="form-check mb-2">
+                    <input type="checkbox" class="form-check-input" />
+                    <label class="form-check-label">
+                        <f:translate key="LLL:EXT:redirect_generator/Resources/Private/Language/Modules/export.xlf:form.resolveTarget" />
+                    </label>
+                </div>
+            </div>
+
+            <div class="col-md-3 d-flex align-items-end">
+                <button type="button" class="btn btn-primary mb-2">
+                    <f:translate key="LLL:EXT:redirect_generator/Resources/Private/Language/Modules/export.xlf:form.submit" />
+                </button>
+            </div>
+        </div>
+
+    </fieldset>
+
+</f:section>
+
+</html>

@@ -6,19 +6,13 @@ namespace GeorgRinger\RedirectGenerator\Domain\Model\Dto;
 
 use TYPO3\CMS\Core\Routing\PageArguments;
 use TYPO3\CMS\Core\Routing\SiteRouteResult;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 
-class UrlResult
+readonly class UrlResult
 {
-
-    protected SiteRouteResult $siteRouteResult;
-    protected PageArguments $pageArguments;
-
-    public function __construct(SiteRouteResult $siteRouteResult, PageArguments $pageArguments)
-    {
-        $this->siteRouteResult = $siteRouteResult;
-        $this->pageArguments = $pageArguments;
-    }
+    public function __construct(
+        private SiteRouteResult $siteRouteResult,
+        private PageArguments $pageArguments,
+    ) {}
 
     public function getSiteRouteResult(): SiteRouteResult
     {
@@ -32,18 +26,13 @@ class UrlResult
 
     public function getLinkString(): string
     {
-        $parameters = [
-            'uid' => $this->pageArguments->getPageId(),
-        ];
+        $parameters = ['uid' => $this->pageArguments->getPageId()];
 
-        // language
-        if ($this->siteRouteResult->getLanguage() && $this->siteRouteResult->getLanguage()->getLanguageId() > 0) {
-            $parameters['L'] = $this->siteRouteResult->getLanguage()->getLanguageId();
+        $languageId = $this->siteRouteResult->getLanguage()?->getLanguageId();
+        if ($languageId !== null && $languageId > 0) {
+            $parameters['L'] = $languageId;
         }
 
-        $parameters = GeneralUtility::implodeArrayForUrl('', $parameters);
-        return sprintf('t3://page?%s', trim($parameters, '&'));
+        return 't3://page?' . http_build_query($parameters);
     }
-
-
 }

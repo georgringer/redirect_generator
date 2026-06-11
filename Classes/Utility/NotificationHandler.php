@@ -120,7 +120,7 @@ class NotificationHandler
      */
     protected function sendNotificationEmail(string $subject, array $lines): void
     {
-        $recipients = \explode(',', $this->extensionConfiguration->get('redirect_generator', 'notification_email') ?? '');
+        $recipients = GeneralUtility::trimExplode(',', $this->extensionConfiguration->get('redirect_generator', 'notification_email') ?? '', true);
 
         if (empty($recipients)) {
             return;

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file source-language="en" target-language="de" datatype="plaintext" original="EXT:redirect_generator/Resources/Private/Language/Modules/importexport.xlf" product-name="redirect_generator">
+    <header/>
+    <body>
+      <trans-unit id="title">
+        <source>Import/Export Redirects</source>
+        <target>Weiterleitungen importieren/exportieren</target>
+      </trans-unit>
+      <trans-unit id="short_description">
+        <source>Import and export redirects via CSV</source>
+        <target>Weiterleitungen per CSV importieren und exportieren</target>
+      </trans-unit>
+      <trans-unit id="description">
+        <source>Import redirects from CSV or export existing redirects to CSV.</source>
+        <target>Weiterleitungen aus CSV importieren oder vorhandene Weiterleitungen als CSV exportieren.</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

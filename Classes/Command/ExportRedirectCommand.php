@@ -3,37 +3,29 @@ declare(strict_types=1);
 
 namespace GeorgRinger\RedirectGenerator\Command;
 
-use GeorgRinger\RedirectGenerator\Service\CsvReader;
 use GeorgRinger\RedirectGenerator\Service\ExportService;
 use GeorgRinger\RedirectGenerator\Utility\NotificationHandler;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 
+#[AsCommand('redirect:export', 'Export redirects as CSV')]
 class ExportRedirectCommand extends Command
 {
-
-    /** @var NotificationHandler */
-    protected $notificationHandler;
-
     public function __construct(
-        string $name = '',
-        ?NotificationHandler $notificationHandler = null
-    )
-    {
-        $this->notificationHandler = $notificationHandler;
-
-        parent::__construct('redirect:export');
+        private readonly ExportService $exportService,
+        private readonly NotificationHandler $notificationHandler,
+    ) {
+        parent::__construct();
     }
 
     public function configure(): void
     {
-        $this->setDescription('Export redirects as csv')
-            ->addArgument('target', InputArgument::REQUIRED, 'Target')
+        $this->addArgument('target', InputArgument::REQUIRED, 'Target')
             ->addOption(
                 'transform-target-url',
                 'transform',
@@ -57,8 +49,7 @@ class ExportRedirectCommand extends Command
         }
 
         $transformTargetUrl = $input->hasOption('transform-target-url') && $input->getOption('transform-target-url') === true;
-        $exportService = GeneralUtility::makeInstance(ExportService::class);
-        $data = $exportService->run($transformTargetUrl);
+        $data = $this->exportService->run($transformTargetUrl);
         if (empty($data)) {
             $data['ok'] = 'No redirects found!';
             $this->notificationHandler->sendExportResultAsEmail($data);
@@ -66,10 +57,12 @@ class ExportRedirectCommand extends Command
             return 0;
         }
 
-        $csv = new CsvReader();
-        $csv->heading = true;
-        $csv->titles = array_keys($data[0]);
-        $csv->save($file, $data);
+        $handle = fopen($file, 'w');
+        fputcsv($handle, array_keys($data[0]), ',', '"', '');
+        foreach ($data as $row) {
+            fputcsv($handle, array_values($row), ',', '"', '');
+        }
+        fclose($handle);
 
         $data['ok'] = \sprintf('CSV generated, handled %s redirects!', count($data));
         $this->notificationHandler->sendExportResultAsEmail($data);

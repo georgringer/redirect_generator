@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file source-language="en" datatype="plaintext" original="EXT:redirect_generator/Resources/Private/Language/Modules/import.xlf" product-name="redirect_generator">
+    <header/>
+    <body>
+      <trans-unit id="title">
+        <source>Import Redirects</source>
+      </trans-unit>
+      <trans-unit id="short_description">
+        <source>Import redirects from CSV</source>
+      </trans-unit>
+      <trans-unit id="description">
+        <source>Paste CSV content to bulk-import redirects into the redirect table.</source>
+      </trans-unit>
+      <trans-unit id="heading">
+        <source>Import Redirects from CSV</source>
+      </trans-unit>
+      <trans-unit id="form.csvContent">
+        <source>CSV Content</source>
+      </trans-unit>
+      <trans-unit id="form.csvContent.description">
+        <source>Paste CSV rows here. Column 1: source path, column 2: target URL. No header row needed.</source>
+      </trans-unit>
+      <trans-unit id="form.delimiter">
+        <source>Delimiter</source>
+      </trans-unit>
+      <trans-unit id="form.delimiter.semicolon">
+        <source>Semicolon (;)</source>
+      </trans-unit>
+      <trans-unit id="form.delimiter.comma">
+        <source>Comma (,)</source>
+      </trans-unit>
+      <trans-unit id="form.delimiter.tab">
+        <source>Tab</source>
+      </trans-unit>
+      <trans-unit id="form.statusCode">
+        <source>Default Redirect Type</source>
+      </trans-unit>
+      <trans-unit id="form.dryRun">
+        <source>Dry Run</source>
+      </trans-unit>
+      <trans-unit id="form.submit">
+        <source>Import</source>
+      </trans-unit>
+      <trans-unit id="result.dryRun">
+        <source>Dry run – no redirects were written to the database.</source>
+      </trans-unit>
+      <trans-unit id="result.ok">
+        <source>Successfully imported redirects</source>
+      </trans-unit>
+      <trans-unit id="result.error">
+        <source>Errors</source>
+      </trans-unit>
+      <trans-unit id="result.skipped">
+        <source>Skipped (source equals target)</source>
+      </trans-unit>
+      <trans-unit id="result.duplicates.conflicting">
+        <source>Conflicting duplicates (same source, different target)</source>
+      </trans-unit>
+      <trans-unit id="result.duplicates.non_conflicting">
+        <source>Already exists (identical source and target)</source>
+      </trans-unit>
+      <trans-unit id="help.title">
+        <source>Examples</source>
+      </trans-unit>
+      <trans-unit id="help.description">
+        <source>Each line contains one redirect. Columns are separated by the chosen delimiter. The fourth column (1) marks a target as external and skips URL resolving.</source>
+      </trans-unit>
+      <trans-unit id="help.example.basic.title">
+        <source>Basic (source; target)</source>
+      </trans-unit>
+      <trans-unit id="help.example.statuscode.title">
+        <source>With status code (source; target; status code)</source>
+      </trans-unit>
+      <trans-unit id="help.example.external.title">
+        <source>External target (source; target; status code; external)</source>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

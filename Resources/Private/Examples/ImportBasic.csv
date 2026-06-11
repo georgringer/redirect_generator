@@ -1,4 +1,4 @@
-source;target;status_code
-/fo/bar;http://t3-master.vm/examples/extensions/news;301
-/fo/bar2;http://t3-master.vm/examples/extensions/news;307
-/fo/bar3;http://t3-master.vm/exakqwkqkwmples/extensions/news;301
+source;target;status_code;external
+/old-page;https://example.com/new-page;301;0
+/old-section/article;https://example.com/news/article;307;0
+/external-link;https://other-domain.com/page;301;1

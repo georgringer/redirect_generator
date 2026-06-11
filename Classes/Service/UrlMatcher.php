@@ -10,10 +10,13 @@ use TYPO3\CMS\Core\Routing\RouteNotFoundException;
 use TYPO3\CMS\Core\Routing\SiteMatcher;
 use TYPO3\CMS\Core\Site\Entity\Site;
 use TYPO3\CMS\Core\Site\Entity\SiteInterface;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class UrlMatcher
 {
+    public function __construct(
+        private readonly SiteMatcher $siteMatcher,
+    ) {}
+
     /**
      * @param string $url
      * @return UrlResult
@@ -24,8 +27,7 @@ class UrlMatcher
         $url = trim($url);
         $request = new ServerRequest($url, 'GET');
 
-        $siteMatcher = GeneralUtility::makeInstance(SiteMatcher::class);
-        $routeResult = $siteMatcher->matchRequest($request);
+        $routeResult = $this->siteMatcher->matchRequest($request);
 
         /** @var SiteInterface $site */
         $site = $routeResult->getSite();
