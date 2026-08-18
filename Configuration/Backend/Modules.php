@@ -14,7 +14,11 @@ if (GeneralUtility::makeInstance(Typo3Version::class)->getMajorVersion() < 14) {
             'access' => 'user',
             'path' => '/module/site/redirect-generator',
             'iconIdentifier' => 'actions-upload',
-            'labels' => 'LLL:EXT:redirect_generator/Resources/Private/Language/Modules/importexport.xlf',
+            'labels' => [
+                'title' => 'LLL:EXT:redirect_generator/Resources/Private/Language/Modules/importexport.xlf:title',
+                'description' => 'LLL:EXT:redirect_generator/Resources/Private/Language/Modules/importexport.xlf:description',
+                'shortDescription' => 'LLL:EXT:redirect_generator/Resources/Private/Language/Modules/importexport.xlf:short_description',
+            ],
             'routes' => [
                 '_default' => [
                     'target' => ImportExportModuleController::class . '::handleImportRequest',
